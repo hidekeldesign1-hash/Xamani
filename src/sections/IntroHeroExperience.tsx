@@ -29,13 +29,30 @@ function lerp(map: number[], values: number[], v: number): number {
   return values[values.length - 1];
 }
 
-function finalVisual(isotipoFinal: number) {
+/** En móvil las animaciones deben cerrar antes del freeze para evitar el snap final. */
+const MOBILE_ANIM_COMPLETE = 0.84;
+const MOBILE_FREEZE_THRESHOLD = 0.96;
+
+function finalVisual(isotipoFinal: number, isMobile = false) {
+  if (isMobile) {
+    return {
+      brandTopGap: "9vh",
+      logoScale: 0.68,
+      isotipoSize: isotipoFinal,
+      headlineVisible: true,
+      discoverOpacity: 0,
+      menuOpacity: 1,
+      menuY: 0,
+      streakOpacity: 0,
+    };
+  }
+
   return {
     brandTopGap: "6vh",
     logoScale: 0.62,
     isotipoSize: isotipoFinal,
     headlineVisible: true,
-    discoverOpacity: 1,
+    discoverOpacity: 0,
     menuOpacity: 1,
     menuY: -20,
     streakOpacity: 0,
@@ -45,14 +62,30 @@ function finalVisual(isotipoFinal: number) {
 function visualFromProgress(
   v: number,
   isotipoIntro: number,
-  isotipoFinal: number
+  isotipoFinal: number,
+  isMobile = false
 ) {
+  if (isMobile) {
+    const t = Math.min(1, v / MOBILE_ANIM_COMPLETE);
+
+    return {
+      brandTopGap: `${lerp([0, 1], [20, 9], t)}vh`,
+      logoScale: lerp([0, 1], [1, 0.68], t),
+      isotipoSize: lerp([0, 1], [isotipoIntro, isotipoFinal], t),
+      headlineVisible: v > 0.22,
+      discoverOpacity: Math.max(0, 1 - v / 0.07),
+      menuOpacity: lerp([0.28, 0.58], [0, 1], t),
+      menuY: lerp([0.28, 0.58], [18, 0], t),
+      streakOpacity: lerp([0, 0.45, 0.72], [1, 0.35, 0], t),
+    };
+  }
+
   return {
     brandTopGap: `${lerp([0, 1], [22, 6], v)}vh`,
     logoScale: lerp([0, 1], [1, 0.62], v),
     isotipoSize: lerp([0, 1], [isotipoIntro, isotipoFinal], v),
     headlineVisible: v > 0.28,
-    discoverOpacity: lerp([0, 0.12, 0.32, 0.48, 0.62], [1, 1, 0.15, 0.15, 1], v),
+    discoverOpacity: Math.max(0, 1 - v / 0.07),
     menuOpacity: lerp([0.42, 0.72], [0, 1], v),
     menuY: lerp([0.42, 0.72], [12, -20], v),
     streakOpacity: lerp([0, 0.55, 0.85], [1, 0.35, 0], v),
@@ -121,10 +154,10 @@ export default function IntroHeroExperience() {
   const freezeAtEnd = useCallback(() => {
     if (stageRef.current === "frozen") return;
     stageRef.current = "frozen";
-    setVisual(finalVisual(isotipoFinal));
+    setVisual(finalVisual(isotipoFinal, isMobile));
     setStage("frozen");
     lockScroll();
-  }, [lockScroll, isotipoFinal]);
+  }, [lockScroll, isotipoFinal, isMobile]);
 
   const unlockScroll = useCallback(() => {
     const y = savedScrollY.current;
@@ -153,20 +186,22 @@ export default function IntroHeroExperience() {
     }, 900);
   }, [unlockScroll]);
 
+  const freezeThreshold = isMobile ? MOBILE_FREEZE_THRESHOLD : FREEZE_THRESHOLD;
+
   useThrottledMotionValueEvent(scrollYProgress, (v) => {
     if (stageRef.current === "frozen") return;
 
     if (unfreezingRef.current) {
-      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal));
+      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
       return;
     }
 
-    if (v >= FREEZE_THRESHOLD) {
+    if (v >= freezeThreshold) {
       freezeAtEnd();
       return;
     }
 
-    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal));
+    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
   });
 
   useEffect(() => {
@@ -176,7 +211,7 @@ export default function IntroHeroExperience() {
       if (unfreezingRef.current) return;
       const max = getMaxScroll();
       if (max <= 0) return;
-      if (window.scrollY >= max * FREEZE_THRESHOLD) {
+      if (window.scrollY >= max * freezeThreshold) {
         freezeAtEnd();
         return;
       }
@@ -187,7 +222,7 @@ export default function IntroHeroExperience() {
 
     window.addEventListener("scroll", clampScroll, { passive: true });
     return () => window.removeEventListener("scroll", clampScroll);
-  }, [stage, getMaxScroll, freezeAtEnd]);
+  }, [stage, getMaxScroll, freezeAtEnd, freezeThreshold]);
 
   useEffect(() => {
     if (stage !== "frozen") return;
@@ -237,7 +272,7 @@ export default function IntroHeroExperience() {
   useEffect(() => {
     if (!prefersReducedMotion) return;
     setReady(true);
-    setVisual(finalVisual(isotipoFinal));
+    setVisual(finalVisual(isotipoFinal, isMobile));
     setStage("frozen");
     savedScrollY.current = 0;
     document.documentElement.style.overflow = "hidden";
@@ -289,7 +324,6 @@ export default function IntroHeroExperience() {
           heroInteractive={heroInteractive}
           scrollLocked={stage === "frozen"}
           onDiscoverClick={handleDiscover}
-          onVolverClick={returnToIntro}
           {...visual}
         />
       </div>

@@ -14,7 +14,6 @@ interface HeroContentProps {
   heroInteractive: boolean;
   scrollLocked?: boolean;
   onDiscoverClick: () => void;
-  onVolverClick?: () => void;
   brandTopGap: string;
   logoScale: number;
   isotipoSize: number;
@@ -31,12 +30,14 @@ function BrandingBlock({
   isotipoSize,
   headlineVisible,
   compact = false,
+  smoothHeadline = false,
 }: {
   ready: boolean;
   logoScale: number;
   isotipoSize: number;
   headlineVisible: boolean;
   compact?: boolean;
+  smoothHeadline?: boolean;
 }) {
   return (
     <div className={`flex flex-col items-center text-center ${compact ? "gap-2" : ""}`}>
@@ -79,13 +80,20 @@ function BrandingBlock({
       <motion.div
         className="w-full max-w-4xl overflow-hidden px-2"
         initial={false}
-        animate={{
-          opacity: headlineVisible ? 1 : 0,
-          y: headlineVisible ? 0 : 16,
-          maxHeight: headlineVisible ? 160 : 0,
-          marginTop: headlineVisible ? (compact ? 12 : 28) : 0,
-        }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        animate={
+          smoothHeadline
+            ? {
+                opacity: headlineVisible ? 1 : 0,
+                y: headlineVisible ? 0 : 10,
+              }
+            : {
+                opacity: headlineVisible ? 1 : 0,
+                y: headlineVisible ? 0 : 16,
+                maxHeight: headlineVisible ? 160 : 0,
+                marginTop: headlineVisible ? (compact ? 12 : 28) : 0,
+              }
+        }
+        transition={{ duration: smoothHeadline ? 0.65 : 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
         <h2
           className={
@@ -102,51 +110,11 @@ function BrandingBlock({
   );
 }
 
-function VolverButton({
-  menuOpacity,
-  onVolverClick,
-}: {
-  menuOpacity: number;
-  onVolverClick?: () => void;
-}) {
-  return (
-    <motion.button
-      type="button"
-      onClick={onVolverClick}
-      className="flex flex-col items-center gap-1.5 border-0 bg-transparent p-2"
-      aria-label="Volver a la intro"
-      animate={{ opacity: menuOpacity }}
-      transition={{ duration: 0.3 }}
-    >
-      <svg
-        width="14"
-        height="8"
-        viewBox="0 0 14 8"
-        fill="none"
-        className="text-xamani-silver/70"
-        aria-hidden="true"
-      >
-        <path
-          d="M1 1L7 7L13 1"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span className="font-archia text-[0.6rem] uppercase tracking-[0.35em] text-xamani-silver/70">
-        Volver
-      </span>
-    </motion.button>
-  );
-}
-
 function HeroContent({
   ready,
   heroInteractive,
   scrollLocked = false,
   onDiscoverClick,
-  onVolverClick,
   brandTopGap,
   logoScale,
   isotipoSize,
@@ -156,7 +124,7 @@ function HeroContent({
   menuY,
   streakOpacity = 1,
 }: HeroContentProps) {
-  const mobileMenuMode = menuOpacity > 0.45;
+  const showMobileDiscover = discoverOpacity > 0.02;
 
   return (
     <section
@@ -185,77 +153,61 @@ function HeroContent({
       </motion.div>
 
       {/* Móvil */}
-      <div
-        className={`relative z-10 flex h-full min-h-0 flex-col px-4 md:hidden ${
-          mobileMenuMode
-            ? "justify-center gap-2.5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
-            : ""
-        }`}
-        style={mobileMenuMode ? undefined : { paddingTop: brandTopGap }}
-      >
-        <BrandingBlock
-          ready={ready}
-          logoScale={logoScale}
-          isotipoSize={isotipoSize}
-          headlineVisible={headlineVisible}
-          compact={mobileMenuMode}
-        />
-
-        {mobileMenuMode ? (
-          <motion.div
-            className={`w-full ${heroInteractive ? "" : "pointer-events-none"}`}
-            initial={false}
-            animate={{ opacity: menuOpacity }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <HeroMenu />
-          </motion.div>
-        ) : (
-          <div className="min-h-0 flex-1" aria-hidden="true" />
-        )}
+      <div className="relative z-10 flex h-full min-h-0 flex-col px-4 md:hidden">
+        <div
+          className="flex shrink-0 flex-col items-center text-center"
+          style={{ paddingTop: brandTopGap }}
+        >
+          <BrandingBlock
+            ready={ready}
+            logoScale={logoScale}
+            isotipoSize={isotipoSize}
+            headlineVisible={headlineVisible}
+            smoothHeadline
+          />
+        </div>
 
         <div
-          className={`flex shrink-0 flex-col items-center gap-2 ${
-            mobileMenuMode ? "" : "pb-[calc(1rem+env(safe-area-inset-bottom))]"
-          }`}
+          className={`flex min-h-0 w-full flex-1 flex-col justify-center py-2 ${heroInteractive ? "" : "pointer-events-none"}`}
+          style={{
+            opacity: menuOpacity,
+            transform: `translate3d(0, ${menuY}px, 0)`,
+          }}
         >
-          {!mobileMenuMode && (
-            <motion.div
-              className={`w-full ${heroInteractive ? "" : "pointer-events-none"}`}
-              animate={{ opacity: menuOpacity }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <HeroMenu />
-            </motion.div>
-          )}
+          <HeroMenu />
+        </div>
 
-          {scrollLocked ? (
-            <VolverButton menuOpacity={menuOpacity} onVolverClick={onVolverClick} />
+        <div className="relative flex shrink-0 flex-col items-center pb-[calc(1.85rem+env(safe-area-inset-bottom))]">
+          {showMobileDiscover ? (
+            <div
+              className="mb-3 flex w-full justify-center"
+              style={{
+                opacity: ready ? discoverOpacity : 0,
+                pointerEvents: ready && discoverOpacity > 0.2 ? "auto" : "none",
+              }}
+              aria-hidden={!showMobileDiscover}
+            >
+              <ScrollIndicator animateEntrance={false} onClick={onDiscoverClick} />
+            </div>
           ) : null}
 
           <motion.div
+            className="-translate-y-1.5"
             initial={{ opacity: 0 }}
             animate={{ opacity: ready ? 1 : 0 }}
             transition={{ duration: 1, delay: 0.85 }}
           >
             <SocialFooter variant="icons" />
           </motion.div>
-
-          {!scrollLocked ? (
-            <motion.div
-              animate={{ opacity: discoverOpacity }}
-              transition={{ duration: 0.3 }}
-            >
-              <ScrollIndicator animateEntrance={!ready} onClick={onDiscoverClick} />
-            </motion.div>
-          ) : null}
         </div>
       </div>
 
-      {/* Desktop */}
-      <div className="relative z-10 hidden h-full min-h-0 flex-col md:flex">
+      {/* Desktop + tablet — espaciado simétrico branding ↔ menú ↔ redes */}
+      <div className="relative z-10 hidden h-full min-h-0 md:grid md:grid-rows-[1fr_auto_1fr_auto_1fr_auto_1fr] md:items-center">
+        <div aria-hidden="true" />
+
         <div
-          className="flex shrink-0 flex-col items-center px-4 text-center sm:px-6"
+          className="flex flex-col items-center px-4 text-center sm:px-6"
           style={{ paddingTop: brandTopGap }}
         >
           <BrandingBlock
@@ -266,31 +218,42 @@ function HeroContent({
           />
         </div>
 
+        <div aria-hidden="true" />
+
         <motion.div
-          className={`flex min-h-0 w-full flex-1 flex-col justify-center pt-4 sm:pt-6 ${heroInteractive ? "" : "pointer-events-none"}`}
+          className={`flex w-full items-center justify-center ${heroInteractive ? "" : "pointer-events-none"}`}
           animate={{ opacity: menuOpacity, y: menuY }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           <HeroMenu />
         </motion.div>
 
-        <div className="flex w-full shrink-0 flex-col items-center gap-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div aria-hidden="true" />
+
+        <div className="relative flex w-full flex-col items-center pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
+          <div
+            className="absolute bottom-full left-0 right-0 mb-4 flex justify-center"
+            style={{
+              opacity: ready ? discoverOpacity : 0,
+              visibility: discoverOpacity > 0.02 ? "visible" : "hidden",
+              pointerEvents: ready && discoverOpacity > 0.2 ? "auto" : "none",
+            }}
+            aria-hidden={discoverOpacity <= 0.02}
+          >
+            <ScrollIndicator animateEntrance={false} onClick={onDiscoverClick} />
+          </div>
+
           <motion.div
+            className="-translate-y-3.5"
             initial={{ opacity: 0 }}
             animate={{ opacity: ready ? 1 : 0 }}
             transition={{ duration: 1, delay: 0.85 }}
           >
             <SocialFooter variant="icons" />
           </motion.div>
-
-          <motion.div
-            animate={{ opacity: discoverOpacity }}
-            transition={{ duration: 0.3 }}
-            className={scrollLocked ? "pointer-events-none" : undefined}
-          >
-            <ScrollIndicator animateEntrance={!ready} onClick={onDiscoverClick} />
-          </motion.div>
         </div>
+
+        <div aria-hidden="true" />
       </div>
     </section>
   );
