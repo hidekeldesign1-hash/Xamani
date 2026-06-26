@@ -183,7 +183,11 @@ export default function ModeloRoadmapExperience() {
             {/* Capa 1 — líneas y nodos del mapa */}
             <ModeloRoadmapCanvas>
               <ModeloRoadmapPath progress={animProgress} />
-              <ModeloRoadmapGlyph progress={animProgress} />
+              <ModeloRoadmapGlyph
+                progress={animProgress}
+                scrollYProgress={scrollYProgress}
+                resolveProgress={(raw) => toAnimProgress(raw, scrollSegments)}
+              />
               {MODELO_STEPS.map((step) => (
                 <ModeloStepNode
                   key={step.id}
