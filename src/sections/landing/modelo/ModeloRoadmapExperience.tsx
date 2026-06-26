@@ -18,6 +18,7 @@ import {
 } from "./data";
 import ModeloRoadmapCanvas from "./ModeloRoadmapCanvas";
 import ModeloRoadmapCta from "./ModeloRoadmapCta";
+import ModeloRoadmapGlyph from "./ModeloRoadmapGlyph";
 import ModeloRoadmapPath from "./ModeloRoadmapPath";
 import ModeloStepCard from "./ModeloStepCard";
 import ModeloStepNode from "./ModeloStepNode";
@@ -182,6 +183,7 @@ export default function ModeloRoadmapExperience() {
             {/* Capa 1 — líneas y nodos del mapa */}
             <ModeloRoadmapCanvas>
               <ModeloRoadmapPath progress={animProgress} />
+              <ModeloRoadmapGlyph progress={animProgress} />
               {MODELO_STEPS.map((step) => (
                 <ModeloStepNode
                   key={step.id}
