@@ -35,6 +35,7 @@
     }
 
     html {
+      scroll-behavior: auto;
       scroll-padding-bottom: 7rem;
     }
   }

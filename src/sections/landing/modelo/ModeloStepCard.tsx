@@ -43,7 +43,7 @@ export default function ModeloStepCard({ step, visible }: ModeloStepCardProps) {
 
   return (
     <motion.article
-      className={`absolute z-10 max-md:z-[5] max-md:translate-y-0 md:max-w-[21rem] md:-translate-y-1/2 ${
+      className={`absolute isolate z-10 max-md:z-[8] max-md:translate-y-0 md:max-w-[21rem] md:-translate-y-1/2 ${
         isMobile || !isLeft ? "text-left" : "text-right"
       }`}
       initial={false}
@@ -56,7 +56,6 @@ export default function ModeloStepCard({ step, visible }: ModeloStepCardProps) {
         top: `${topPct}%`,
         ...positionStyle,
         pointerEvents: visible ? "auto" : "none",
-        willChange: "opacity, transform",
       }}
     >
       {isMobile && (

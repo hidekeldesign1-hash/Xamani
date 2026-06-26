@@ -24,7 +24,7 @@ export default function InnerPageShell({ children }: InnerPageShellProps) {
     >
       <FloatingNavbar alwaysVisible />
       <div className="relative min-h-screen">
-        <LogoPatternLayer />
+        <LogoPatternLayer className="max-md:hidden" />
         <div className="relative z-[1] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0">
           <div
             className={`overflow-x-clip rounded-t-[4rem] sm:rounded-t-[6rem] ${

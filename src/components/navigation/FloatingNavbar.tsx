@@ -1,8 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Isotipo from "@/components/brand/Isotipo";
 import { HeroMenuIcon } from "@/components/icons/HeroMenuIcons";
@@ -51,19 +51,31 @@ const mobileAccentStyles: Record<
 };
 
 function HomeLogoButton({ size = "md" }: { size?: "md" | "lg" }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const shell = size === "lg" ? "h-11 w-11" : "h-10 w-10";
   const logo = size === "lg" ? "h-7 w-7" : "h-6 w-6";
+  const canGoBack = pathname !== "/";
+
+  const handleClick = () => {
+    if (canGoBack && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  };
 
   return (
-    <Link
-      href="/"
-      aria-label="Ir al inicio"
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-label={canGoBack ? "Regresar a la página anterior" : "Ir al inicio"}
       className={`flex ${shell} shrink-0 items-center justify-center rounded-full border border-xamani-silver/25 bg-white/5 transition-all duration-300 hover:scale-105 hover:border-xamani-cyan/45 hover:bg-xamani-cyan/10 active:scale-95`}
     >
       <span className={`relative ${logo}`}>
         <Isotipo className="h-full w-full" />
       </span>
-    </Link>
+    </button>
   );
 }
 
@@ -136,12 +148,22 @@ export default function FloatingNavbar({ alwaysVisible = false }: FloatingNavbar
       setScrollVisible(heroBottom <= 72);
     };
 
+    let rafId = 0;
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        updateVisibility();
+      });
+    };
+
     updateVisibility();
-    window.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", updateVisibility);
     return () => {
-      window.removeEventListener("scroll", updateVisibility);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", updateVisibility);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [alwaysVisible]);
 
@@ -233,7 +255,7 @@ export default function FloatingNavbar({ alwaysVisible = false }: FloatingNavbar
                 animate={{ opacity: 1, y: 0 }}
                 exit={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
                 transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-full left-0 right-0 mb-2 overflow-hidden rounded-card border border-white/10 bg-xamani-navy/95 shadow-glass backdrop-blur-glass"
+                className="absolute bottom-full left-0 right-0 mb-2 overflow-hidden rounded-card border border-white/10 bg-xamani-navy/95 shadow-glass max-md:backdrop-blur-sm md:backdrop-blur-glass"
               >
                 <ul className="flex list-none flex-col p-2">
                   {MOBILE_MENU_ITEMS.map((item) => {
@@ -267,7 +289,7 @@ export default function FloatingNavbar({ alwaysVisible = false }: FloatingNavbar
             )}
           </AnimatePresence>
 
-          <div className="grid grid-cols-[2.75rem_1fr_2.75rem] items-center gap-2 rounded-pill border border-white/10 bg-xamani-navy/90 p-2 shadow-glass backdrop-blur-glass sm:grid-cols-[3rem_1fr_3rem]">
+          <div className="grid grid-cols-[2.75rem_1fr_2.75rem] items-center gap-2 rounded-pill border border-white/10 bg-xamani-navy/90 p-2 shadow-glass max-md:backdrop-blur-sm sm:grid-cols-[3rem_1fr_3rem] md:backdrop-blur-glass">
             <HomeLogoButton size="lg" />
             <Link
               href={EQUIPO_ITEM.href}

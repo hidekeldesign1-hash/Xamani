@@ -1,15 +1,17 @@
 "use client";
 
 import {
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
 } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeroContent from "@/components/hero/HeroContent";
+import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
+import { useIsMobile } from "@/sections/landing/modelo/useIsMobile";
 
 /** Espacio de scroll que alimenta la transición intro → hero final */
 const SCROLL_VH = 100;
+const MOBILE_SCROLL_VH = 72;
 /** Congelar cuando la animación llegó al hero completo */
 const FREEZE_THRESHOLD = 0.97;
 
@@ -45,7 +47,8 @@ function finalVisual(isotipoFinal: number) {
 function visualFromProgress(
   v: number,
   isotipoIntro: number,
-  isotipoFinal: number
+  isotipoFinal: number,
+  isMobile = false
 ) {
   return {
     brandTopGap: `${lerp([0, 1], [22, 6], v)}vh`,
@@ -56,8 +59,8 @@ function visualFromProgress(
     menuOpacity: lerp([0.42, 0.72], [0, 1], v),
     menuY: lerp([0.42, 0.72], [12, -20], v),
     streakOpacity: lerp([0, 0.55, 0.85], [1, 0.35, 0], v),
-    streakBlur: lerp([0, 0.75], [0, 28], v),
-    streakScale: lerp([0, 0.85], [1, 1.08], v),
+    streakBlur: isMobile ? 0 : lerp([0, 0.75], [0, 28], v),
+    streakScale: isMobile ? 1 : lerp([0, 0.85], [1, 1.08], v),
   };
 }
 
@@ -70,6 +73,7 @@ export default function IntroHeroExperience() {
   const [ready, setReady] = useState(false);
   const [stage, setStage] = useState<Stage>("transition");
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const isMobile = useIsMobile();
   const isotipoFinal = prefersReducedMotion ? 56 : 64;
   const isotipoIntro = prefersReducedMotion ? 52 : 48;
 
@@ -156,11 +160,11 @@ export default function IntroHeroExperience() {
     }, 900);
   }, [unlockScroll]);
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
+  useThrottledMotionValueEvent(scrollYProgress, (v) => {
     if (stageRef.current === "frozen") return;
 
     if (unfreezingRef.current) {
-      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal));
+      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
       return;
     }
 
@@ -169,7 +173,7 @@ export default function IntroHeroExperience() {
       return;
     }
 
-    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal));
+    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
   });
 
   useEffect(() => {
@@ -272,7 +276,7 @@ export default function IntroHeroExperience() {
 
   const totalHeight = prefersReducedMotion
     ? "100dvh"
-    : `calc(100dvh + ${SCROLL_VH}dvh)`;
+    : `calc(100dvh + ${isMobile ? MOBILE_SCROLL_VH : SCROLL_VH}dvh)`;
 
   const heroInteractive =
     stage === "frozen" || visual.menuOpacity > 0.75;

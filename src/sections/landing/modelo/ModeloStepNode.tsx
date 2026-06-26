@@ -15,7 +15,7 @@ export default function ModeloStepNode({ step, visible }: ModeloStepNodeProps) {
 
   return (
     <motion.div
-      className="pointer-events-none absolute z-20"
+      className="pointer-events-none absolute z-[1]"
       initial={false}
       animate={{
         opacity: visible ? 1 : 0,
@@ -27,7 +27,6 @@ export default function ModeloStepNode({ step, visible }: ModeloStepNodeProps) {
         top: `${topPct}%`,
         translateX: "-50%",
         translateY: "-50%",
-        willChange: "opacity, transform",
       }}
     >
       {visible && (

@@ -12,7 +12,7 @@ import LogoPatternLayer from "@/sections/landing/shared/LogoPatternLayer";
 export default function LandingEstructural() {
   return (
     <div id="landing" className="relative z-10 w-full overflow-hidden bg-xamani-navy">
-      <LogoPatternLayer />
+      <LogoPatternLayer className="max-md:hidden" />
       <div className="relative z-[1]">
         <Manifiesto />
         <ModeloNegocio />

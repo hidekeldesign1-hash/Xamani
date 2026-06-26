@@ -15,7 +15,7 @@ export default function ModeloRoadmapPath({ progress }: ModeloRoadmapPathProps) 
 
   return (
     <svg
-      className="pointer-events-none absolute inset-0 h-full w-full"
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full"
       viewBox={`0 0 ${ROADMAP_VIEWBOX.width} ${ROADMAP_VIEWBOX.height}`}
       preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
@@ -38,7 +38,6 @@ export default function ModeloRoadmapPath({ progress }: ModeloRoadmapPathProps) 
         strokeLinejoin="round"
         style={{
           pathLength,
-          willChange: "stroke-dashoffset, stroke-dasharray",
         }}
       />
       <path

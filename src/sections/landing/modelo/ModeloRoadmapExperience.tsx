@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -10,6 +9,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import ScrollIndicator from "@/components/navigation/ScrollIndicator";
 import PillLink from "@/components/ui/PillLink";
+import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
 import { ROUTES } from "@/data/heroMenu";
 import {
   CTA_THRESHOLD,
@@ -156,7 +156,7 @@ export default function ModeloRoadmapExperience() {
     ]
   );
 
-  useMotionValueEvent(scrollYProgress, "change", (raw) => {
+  useThrottledMotionValueEvent(scrollYProgress, (raw) => {
     updateRevealed(toAnimProgress(raw, scrollSegments), raw);
   });
 
@@ -179,9 +179,9 @@ export default function ModeloRoadmapExperience() {
       >
         <div className="relative mx-auto flex h-full w-full max-w-5xl flex-col justify-center px-3 max-md:justify-start max-md:pt-5 max-md:pb-5 sm:px-6 md:px-6 md:pb-6 md:pt-10">
           <div className="relative min-h-0 w-full flex-1 max-md:translate-y-5">
+            {/* Capa 1 — líneas y nodos del mapa */}
             <ModeloRoadmapCanvas>
               <ModeloRoadmapPath progress={animProgress} />
-
               {MODELO_STEPS.map((step) => (
                 <ModeloStepNode
                   key={step.id}
@@ -191,6 +191,7 @@ export default function ModeloRoadmapExperience() {
               ))}
             </ModeloRoadmapCanvas>
 
+            {/* Capa 2 y 3 — tarjeta difuminada + texto */}
             {MODELO_STEPS.map((step) => (
               <ModeloStepCard
                 key={step.id}
@@ -199,6 +200,7 @@ export default function ModeloRoadmapExperience() {
               />
             ))}
 
+            {/* CTA con difuminado sobre el mapa */}
             <ModeloRoadmapCta visible={ctaRevealed} />
           </div>
         </div>
@@ -206,10 +208,10 @@ export default function ModeloRoadmapExperience() {
         <motion.div
           className="pointer-events-none absolute inset-x-0 bottom-1 z-20 flex justify-center md:bottom-3"
           initial={false}
-          animate={{ opacity: showScrollHint ? 1 : 0, y: showScrollHint ? 0 : 10 }}
+          animate={{ opacity: showScrollHint && !ctaRevealed ? 1 : 0, y: showScrollHint && !ctaRevealed ? 0 : 10 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div style={{ pointerEvents: showScrollHint ? "auto" : "none" }}>
+          <div style={{ pointerEvents: showScrollHint && !ctaRevealed ? "auto" : "none" }}>
             <ScrollIndicator
               variant="prominent"
               label="Descubrir..."

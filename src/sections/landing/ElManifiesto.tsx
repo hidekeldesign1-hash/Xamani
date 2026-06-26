@@ -2,7 +2,6 @@
 
 import {
   motion,
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
 } from "framer-motion";
@@ -10,10 +9,13 @@ import { useRef, useState, type ReactNode } from "react";
 import Isotipo from "@/components/brand/Isotipo";
 import SiteFooter from "@/components/layout/SiteFooter";
 import PillLink from "@/components/ui/PillLink";
+import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
+import { useIsMobile } from "@/sections/landing/modelo/useIsMobile";
 
 const WINE = "#771335";
 const SILVER = "#babab9";
 const SCROLL_VH = 360;
+const MOBILE_SCROLL_VH = 260;
 const PERFIL_MAILTO =
   "mailto:HOLA@XAMANI.COM.MX?subject=Enviar%20mi%20perfil";
 
@@ -189,6 +191,8 @@ function StaticManifiesto() {
 export default function ElManifiesto() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const isMobile = useIsMobile();
+  const scrollVh = isMobile ? MOBILE_SCROLL_VH : SCROLL_VH;
   const [blocks, setBlocks] = useState<BlockMotion[]>(() =>
     computeAllBlocks(0)
   );
@@ -200,7 +204,7 @@ export default function ElManifiesto() {
     offset: ["start start", "end end"],
   });
 
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+  useThrottledMotionValueEvent(scrollYProgress, (progress) => {
     const animProgress = Math.min(1, progress);
     setBlocks(computeAllBlocks(animProgress));
     setCta(computeCtaMotion(animProgress));
@@ -217,7 +221,7 @@ export default function ElManifiesto() {
         ref={scrollRef}
         id="manifiesto"
         className="relative w-full"
-        style={{ height: `${SCROLL_VH}vh` }}
+        style={{ height: `${scrollVh}vh` }}
         aria-hidden={animDone}
       />
 
