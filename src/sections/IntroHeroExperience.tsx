@@ -29,34 +29,16 @@ function lerp(map: number[], values: number[], v: number): number {
   return values[values.length - 1];
 }
 
-/** En móvil las animaciones deben cerrar antes del freeze para evitar el snap final. */
-const MOBILE_ANIM_COMPLETE = 0.84;
-const MOBILE_FREEZE_THRESHOLD = 0.96;
+/** Móvil: la animación visual termina antes del fin del scroll (colchón anti-brinco). */
+const MOBILE_VISUAL_COMPLETE = 0.86;
+const MOBILE_FREEZE_THRESHOLD = 0.992;
 
-function finalVisual(isotipoFinal: number, isMobile = false) {
-  if (isMobile) {
-    return {
-      brandTopGap: "9vh",
-      logoScale: 0.68,
-      isotipoSize: isotipoFinal,
-      headlineVisible: true,
-      discoverOpacity: 0,
-      menuOpacity: 1,
-      menuY: 0,
-      streakOpacity: 0,
-    };
-  }
-
-  return {
-    brandTopGap: "6vh",
-    logoScale: 0.62,
-    isotipoSize: isotipoFinal,
-    headlineVisible: true,
-    discoverOpacity: 0,
-    menuOpacity: 1,
-    menuY: -20,
-    streakOpacity: 0,
-  };
+function finalVisual(
+  isotipoIntro: number,
+  isotipoFinal: number,
+  isMobile = false
+) {
+  return visualFromProgress(1, isotipoIntro, isotipoFinal, isMobile);
 }
 
 function visualFromProgress(
@@ -66,17 +48,17 @@ function visualFromProgress(
   isMobile = false
 ) {
   if (isMobile) {
-    const t = Math.min(1, v / MOBILE_ANIM_COMPLETE);
+    const p = Math.min(1, v);
 
     return {
-      brandTopGap: `${lerp([0, 1], [20, 9], t)}vh`,
-      logoScale: lerp([0, 1], [1, 0.68], t),
-      isotipoSize: lerp([0, 1], [isotipoIntro, isotipoFinal], t),
-      headlineVisible: v > 0.22,
-      discoverOpacity: Math.max(0, 1 - v / 0.07),
-      menuOpacity: lerp([0.28, 0.58], [0, 1], t),
-      menuY: lerp([0.28, 0.58], [18, 0], t),
-      streakOpacity: lerp([0, 0.45, 0.72], [1, 0.35, 0], t),
+      brandTopGap: `${lerp([0, MOBILE_VISUAL_COMPLETE], [20, 9], p)}vh`,
+      logoScale: lerp([0, MOBILE_VISUAL_COMPLETE], [1, 0.68], p),
+      isotipoSize: lerp([0, MOBILE_VISUAL_COMPLETE], [isotipoIntro, isotipoFinal], p),
+      headlineVisible: p > 0.2,
+      discoverOpacity: Math.max(0, 1 - p / 0.07),
+      menuOpacity: lerp([0.36, 0.82], [0, 1], p),
+      menuY: lerp([0.36, 0.82], [18, 0], p),
+      streakOpacity: lerp([0, 0.46, 0.8], [1, 0.35, 0], p),
     };
   }
 
@@ -127,7 +109,9 @@ export default function IntroHeroExperience() {
 
   const getMaxScroll = useCallback(() => {
     const el = scrollRef.current;
-    return el ? Math.max(0, el.offsetHeight - window.innerHeight) : 0;
+    if (!el) return 0;
+    const viewportH = window.visualViewport?.height ?? window.innerHeight;
+    return Math.max(0, el.offsetHeight - viewportH);
   }, []);
 
   const lockScroll = useCallback(() => {
@@ -159,11 +143,16 @@ export default function IntroHeroExperience() {
 
   const freezeAtEnd = useCallback(() => {
     if (stageRef.current === "frozen") return;
+
+    const v = scrollYProgress.get();
+    const visualComplete = isMobile ? MOBILE_VISUAL_COMPLETE : FREEZE_THRESHOLD;
+    if (v < visualComplete) return;
+
     stageRef.current = "frozen";
-    setVisual(finalVisual(isotipoFinal, isMobile));
+    setVisual(finalVisual(isotipoIntro, isotipoFinal, isMobile));
     setStage("frozen");
     lockScroll();
-  }, [lockScroll, isotipoFinal, isMobile]);
+  }, [lockScroll, isotipoIntro, isotipoFinal, isMobile, scrollYProgress]);
 
   const unlockScroll = useCallback(() => {
     const y = savedScrollY.current;
@@ -194,41 +183,68 @@ export default function IntroHeroExperience() {
 
   const freezeThreshold = isMobile ? MOBILE_FREEZE_THRESHOLD : FREEZE_THRESHOLD;
 
-  useThrottledMotionValueEvent(scrollYProgress, (v) => {
-    if (stageRef.current === "frozen") return;
+  const applyScrollProgress = useCallback(
+    (v: number) => {
+      if (stageRef.current === "frozen") return;
 
-    if (unfreezingRef.current) {
-      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
-      return;
-    }
-
-    if (v >= freezeThreshold) {
-      freezeAtEnd();
-      return;
-    }
-
-    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
-  });
-
-  useEffect(() => {
-    if (stage !== "transition") return;
-
-    const clampScroll = () => {
-      if (unfreezingRef.current) return;
-      const max = getMaxScroll();
-      if (max <= 0) return;
-      if (window.scrollY >= max * freezeThreshold) {
-        freezeAtEnd();
+      if (unfreezingRef.current) {
+        setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
         return;
       }
-      if (window.scrollY > max) {
+
+      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
+
+      if (v >= freezeThreshold) {
+        freezeAtEnd();
+      }
+    },
+    [freezeAtEnd, freezeThreshold, isMobile, isotipoFinal, isotipoIntro]
+  );
+
+  useThrottledMotionValueEvent(scrollYProgress, applyScrollProgress, isMobile);
+
+  useEffect(() => {
+    if (stage !== "transition" || !isMobile) return;
+
+    const flushScrollState = () => {
+      if (unfreezingRef.current || stageRef.current === "frozen") return;
+      applyScrollProgress(scrollYProgress.get());
+    };
+
+    const clampOverscroll = () => {
+      if (unfreezingRef.current) return;
+      const max = getMaxScroll();
+      if (max > 0 && window.scrollY > max) {
+        window.scrollTo({ top: max, behavior: "instant" as ScrollBehavior });
+      }
+      flushScrollState();
+    };
+
+    window.addEventListener("scroll", clampOverscroll, { passive: true });
+    window.addEventListener("touchend", flushScrollState, { passive: true });
+    window.addEventListener("scrollend", flushScrollState, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", clampOverscroll);
+      window.removeEventListener("touchend", flushScrollState);
+      window.removeEventListener("scrollend", flushScrollState);
+    };
+  }, [stage, isMobile, applyScrollProgress, scrollYProgress, getMaxScroll]);
+
+  useEffect(() => {
+    if (stage !== "transition" || isMobile) return;
+
+    const clampOverscroll = () => {
+      if (unfreezingRef.current) return;
+      const max = getMaxScroll();
+      if (max > 0 && window.scrollY > max) {
         window.scrollTo({ top: max, behavior: "instant" as ScrollBehavior });
       }
     };
 
-    window.addEventListener("scroll", clampScroll, { passive: true });
-    return () => window.removeEventListener("scroll", clampScroll);
-  }, [stage, getMaxScroll, freezeAtEnd, freezeThreshold]);
+    window.addEventListener("scroll", clampOverscroll, { passive: true });
+    return () => window.removeEventListener("scroll", clampOverscroll);
+  }, [stage, isMobile, getMaxScroll]);
 
   useEffect(() => {
     if (stage !== "frozen") return;
@@ -278,12 +294,12 @@ export default function IntroHeroExperience() {
   useEffect(() => {
     if (!prefersReducedMotion) return;
     setReady(true);
-    setVisual(finalVisual(isotipoFinal, isMobile));
+    setVisual(finalVisual(isotipoIntro, isotipoFinal, isMobile));
     setStage("frozen");
     savedScrollY.current = 0;
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-  }, [prefersReducedMotion, isotipoFinal]);
+  }, [prefersReducedMotion, isotipoFinal, isotipoIntro, isMobile]);
 
   useEffect(() => () => resetBodyScroll(), [resetBodyScroll]);
 
