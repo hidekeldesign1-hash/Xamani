@@ -32,6 +32,15 @@ function lerp(map: number[], values: number[], v: number): number {
 /** Móvil: la animación visual termina antes del fin del scroll (colchón anti-brinco). */
 const MOBILE_VISUAL_COMPLETE = 0.86;
 const MOBILE_FREEZE_THRESHOLD = 0.992;
+/** Móvil: el neon desaparece casi al primer scroll, antes de que aparezca el menú. */
+const MOBILE_STREAK_FADE_END = 0.07;
+
+function mobileStreakOpacity(progress: number): number {
+  if (progress <= 0) return 1;
+  if (progress >= MOBILE_STREAK_FADE_END) return 0;
+  const t = progress / MOBILE_STREAK_FADE_END;
+  return 1 - t * t * (3 - 2 * t);
+}
 
 function finalVisual(
   isotipoIntro: number,
@@ -58,7 +67,7 @@ function visualFromProgress(
       discoverOpacity: Math.max(0, 1 - p / 0.07),
       menuOpacity: lerp([0.36, 0.82], [0, 1], p),
       menuY: lerp([0.36, 0.82], [18, 0], p),
-      streakOpacity: lerp([0, 0.46, 0.8], [1, 0.35, 0], p),
+      streakOpacity: mobileStreakOpacity(p),
     };
   }
 

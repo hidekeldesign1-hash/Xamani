@@ -1,26 +1,34 @@
 "use client";
 
-import { motion, useTransform, type MotionValue } from "framer-motion";
-import { useRef } from "react";
+import { useMotionValueEvent, type MotionValue } from "framer-motion";
+import { useLayoutEffect, useRef } from "react";
 import { ROADMAP_PATH, ROADMAP_VIEWBOX } from "./data";
 
 const GLYPH_SIZE = 42;
 const WINE = "#771335";
 const GLYPH_SRC = "/images/geroglifico-mapa.png";
 
-function pointOnPath(path: SVGPathElement | null, progress: number) {
-  if (!path) {
-    return { x: 98, y: 64, angle: 0 };
-  }
+function applyGlyphTransform(
+  path: SVGPathElement | null,
+  group: SVGGElement | null,
+  progress: number
+) {
+  if (!path || !group) return;
 
   const length = path.getTotalLength();
   const t = Math.max(0, Math.min(1, progress));
-  const at = path.getPointAtLength(length * t);
-  const ahead = path.getPointAtLength(Math.min(length, length * t + 5));
+  const atLen = length * t;
+  const at = path.getPointAtLength(atLen);
+  const ahead = path.getPointAtLength(Math.min(length, atLen + 5));
   const angle =
     (Math.atan2(ahead.y - at.y, ahead.x - at.x) * 180) / Math.PI;
+  const half = GLYPH_SIZE / 2;
 
-  return { x: at.x, y: at.y, angle };
+  group.setAttribute(
+    "transform",
+    `translate(${at.x - half} ${at.y - half}) rotate(${angle} ${half} ${half})`
+  );
+  group.style.opacity = t <= 0.002 ? "0.85" : "1";
 }
 
 interface ModeloRoadmapGlyphProps {
@@ -29,14 +37,17 @@ interface ModeloRoadmapGlyphProps {
 
 export default function ModeloRoadmapGlyph({ progress }: ModeloRoadmapGlyphProps) {
   const pathRef = useRef<SVGPathElement>(null);
+  const glyphRef = useRef<SVGGElement>(null);
 
-  const transform = useTransform(progress, (p) => {
-    const { x, y, angle } = pointOnPath(pathRef.current, p);
-    const half = GLYPH_SIZE / 2;
-    return `translate(${x - half} ${y - half}) rotate(${angle} ${half} ${half})`;
-  });
+  const syncGlyph = (value: number) => {
+    applyGlyphTransform(pathRef.current, glyphRef.current, value);
+  };
 
-  const opacity = useTransform(progress, [0, 0.012], [0.85, 1]);
+  useLayoutEffect(() => {
+    syncGlyph(progress.get());
+  }, [progress]);
+
+  useMotionValueEvent(progress, "change", syncGlyph);
 
   return (
     <svg
@@ -46,13 +57,8 @@ export default function ModeloRoadmapGlyph({ progress }: ModeloRoadmapGlyphProps
       aria-hidden="true"
     >
       <path ref={pathRef} d={ROADMAP_PATH} fill="none" stroke="none" />
-      <motion.g style={{ transform, opacity }}>
-        <foreignObject
-          x={0}
-          y={0}
-          width={GLYPH_SIZE}
-          height={GLYPH_SIZE}
-        >
+      <g ref={glyphRef}>
+        <foreignObject x={0} y={0} width={GLYPH_SIZE} height={GLYPH_SIZE}>
           <div
             className="h-full w-full"
             style={{
@@ -69,7 +75,7 @@ export default function ModeloRoadmapGlyph({ progress }: ModeloRoadmapGlyphProps
             }}
           />
         </foreignObject>
-      </motion.g>
+      </g>
     </svg>
   );
 }

@@ -8,6 +8,7 @@ import HeroNeonCanvas from "@/components/hero/HeroNeonCanvas";
 import ScrollIndicator from "@/components/navigation/ScrollIndicator";
 import SocialFooter from "@/components/navigation/SocialFooter";
 import HeroMenu from "@/components/navigation/HeroMenu";
+import { useIsMobile } from "@/sections/landing/modelo/useIsMobile";
 
 interface HeroContentProps {
   ready: boolean;
@@ -124,7 +125,23 @@ function HeroContent({
   menuY,
   streakOpacity = 1,
 }: HeroContentProps) {
+  const isMobile = useIsMobile();
   const showMobileDiscover = discoverOpacity > 0.02;
+  const neonLayerOpacity = ready ? streakOpacity : 0;
+  const neonCanvasActive = ready && streakOpacity > 0.035;
+
+  const neonGradients = (
+    <>
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-[#0b1520]/25 via-transparent to-[#0b1520]/45"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-t from-[#0b1520]/80 to-transparent"
+        aria-hidden="true"
+      />
+    </>
+  );
 
   return (
     <section
@@ -132,25 +149,36 @@ function HeroContent({
       aria-label="XAMANI — Intro y Hero"
       className="relative isolate flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#0b1520]"
     >
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-0"
-        initial={false}
-        animate={{ opacity: ready ? streakOpacity : 0 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <HeroNeonCanvas
-          className="absolute inset-0 h-full w-full"
-          active={ready && streakOpacity > 0.02}
-        />
+      {isMobile ? (
         <div
-          className="absolute inset-0 bg-gradient-to-b from-[#0b1520]/25 via-transparent to-[#0b1520]/45"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-t from-[#0b1520]/80 to-transparent"
-          aria-hidden="true"
-        />
-      </motion.div>
+          className="pointer-events-none absolute inset-0 z-0 will-change-[opacity]"
+          style={{
+            opacity: neonLayerOpacity,
+            visibility: neonLayerOpacity > 0.01 ? "visible" : "hidden",
+          }}
+        >
+          {neonCanvasActive ? (
+            <HeroNeonCanvas
+              className="absolute inset-0 h-full w-full"
+              active
+            />
+          ) : null}
+          {neonGradients}
+        </div>
+      ) : (
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-0"
+          initial={false}
+          animate={{ opacity: neonLayerOpacity }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <HeroNeonCanvas
+            className="absolute inset-0 h-full w-full"
+            active={neonCanvasActive}
+          />
+          {neonGradients}
+        </motion.div>
+      )}
 
       {/* Móvil */}
       <div className="relative z-10 flex h-full min-h-0 flex-col px-4 md:hidden">
