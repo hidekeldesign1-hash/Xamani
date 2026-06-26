@@ -14,30 +14,18 @@ export default function InnerPageShell({ children }: InnerPageShellProps) {
   const pathname = usePathname();
   const hideFooter = pathname === ROUTES.manifiesto;
   const isManifiesto = pathname === ROUTES.manifiesto;
-  const surfaceBg =
-    pathname === ROUTES.manifiesto || pathname === ROUTES.modelo;
 
   return (
-    <main
-      className={`relative min-h-screen overflow-x-clip ${
-        isManifiesto
-          ? "max-md:bg-[#0b1520]"
-          : surfaceBg
-            ? "bg-xamani-navy-surface"
-            : "bg-xamani-navy"
-      }`}
-    >
+    <main className="relative min-h-screen overflow-x-clip bg-xamani-canvas">
       <FloatingNavbar alwaysVisible />
       <div className="relative min-h-screen">
         <LogoPatternLayer className="max-md:hidden" />
         <div className="relative z-[1] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0">
           <div
-            className={`overflow-x-clip rounded-t-[4rem] sm:rounded-t-[6rem] ${
+            className={`overflow-x-clip bg-xamani-canvas ${
               isManifiesto
-                ? "max-md:rounded-none max-md:bg-[#0b1520]"
-                : surfaceBg
-                  ? "bg-xamani-navy-surface"
-                  : "bg-xamani-navy-deep"
+                ? "max-md:rounded-none"
+                : "rounded-t-[4rem] sm:rounded-t-[6rem]"
             }`}
           >
             <div className="pt-20 md:pt-24">{children}</div>

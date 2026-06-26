@@ -42,7 +42,7 @@ export default function UnirmeEquipo() {
     <section
       id="unirme-equipo"
       aria-label="Unirme al Equipo"
-      className="relative w-full"
+      className="relative w-full bg-xamani-canvas"
     >
       <div className="section-padding mx-auto max-w-7xl">
         <Reveal>

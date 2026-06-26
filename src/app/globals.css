@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --color-bg: #113345;
+    --color-bg: #0b1520;
     --color-text: #babab9;
     --color-accent-wine: #771335;
     --color-accent-cyan: #6ec4d9;
@@ -18,7 +18,7 @@
   }
 
   body {
-    @apply bg-xamani-navy font-archia text-xamani-silver antialiased;
+    @apply bg-xamani-canvas font-archia text-xamani-silver antialiased;
   }
 
   [id="manifiesto"],

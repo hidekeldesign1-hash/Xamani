@@ -8,7 +8,7 @@ export default function ModeloNegocio() {
     <section
       id="modelo-negocio"
       aria-label="Modelo de Negocio"
-      className="relative w-full bg-xamani-navy-surface"
+      className="relative w-full bg-xamani-canvas"
     >
       <ModeloRoadmapExperience />
       <ValuesRibbon />

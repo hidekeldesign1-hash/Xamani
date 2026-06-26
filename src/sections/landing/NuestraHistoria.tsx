@@ -18,7 +18,7 @@ function HistoriaImageFrame({
 }: HistoriaImageFrameProps) {
   return (
     <div
-      className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-xamani-silver/15 bg-[#113345] ${className}`}
+      className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-xamani-silver/15 bg-xamani-canvas ${className}`}
     >
       {src ? (
         <Image
@@ -30,7 +30,7 @@ function HistoriaImageFrame({
         />
       ) : (
         <div
-          className="absolute inset-0 bg-gradient-to-br from-xamani-silver/[0.06] via-[#113345] to-xamani-navy-deep"
+          className="absolute inset-0 bg-gradient-to-br from-xamani-silver/[0.06] via-xamani-canvas to-xamani-navy-deep"
           aria-hidden="true"
         />
       )}
@@ -63,7 +63,7 @@ export default function NuestraHistoria() {
     <section
       id="nuestra-historia"
       aria-label="Nuestra Historia"
-      className="relative w-full"
+      className="relative w-full bg-xamani-canvas"
     >
       {/* Título de sección */}
       <div className="section-padding mx-auto max-w-7xl pb-10 pt-6 text-center lg:pb-16 lg:pt-10">

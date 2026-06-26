@@ -52,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${ambit.variable} ${archia.variable}`}>
-      <body className="min-h-screen overflow-x-hidden bg-xamani-navy font-archia text-xamani-silver">
+      <body className="min-h-screen overflow-x-hidden bg-xamani-canvas font-archia text-xamani-silver">
         {children}
       </body>
     </html>

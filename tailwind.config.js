@@ -11,6 +11,7 @@ module.exports = {
       colors: {
         xamani: {
           navy: "#113345",
+          canvas: "#0b1520",
           "navy-surface": "#0f1d2c",
           silver: "#babab9",
           wine: "#771335",

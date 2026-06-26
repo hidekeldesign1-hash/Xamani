@@ -22,7 +22,7 @@ export default function MediaPlaceholder({
       aria-hidden="true"
     >
       <div className="absolute inset-0 overflow-hidden opacity-[0.07]">
-        <div className="absolute left-1/2 top-1/2 h-full w-full max-h-[120%] max-w-[120%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle,transparent_20%,#113345_70%)] sm:max-h-[140%] sm:max-w-[140%]" />
+        <div className="absolute left-1/2 top-1/2 h-full w-full max-h-[120%] max-w-[120%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle,transparent_20%,#0b1520_70%)] sm:max-h-[140%] sm:max-w-[140%]" />
         {Array.from({ length: 8 }).map((_, i) => (
           <span
             key={i}

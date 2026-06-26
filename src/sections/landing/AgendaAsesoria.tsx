@@ -25,7 +25,7 @@ export default function AgendaAsesoria() {
     <section
       id="agenda-asesoria"
       aria-label="Agenda una Asesoría"
-      className="relative w-full"
+      className="relative w-full bg-xamani-canvas"
     >
       <div className="section-padding mx-auto max-w-7xl">
         <Reveal className="mb-10 text-center sm:mb-14">

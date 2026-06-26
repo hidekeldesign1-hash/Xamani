@@ -20,7 +20,7 @@ export default function ModeloRoadmapCta({ visible }: ModeloRoadmapCtaProps) {
       aria-hidden={!visible}
     >
       <motion.div
-        className="absolute inset-0 bg-xamani-navy-surface/80 backdrop-blur-[14px]"
+        className="absolute inset-0 bg-xamani-canvas/80 backdrop-blur-[14px]"
         initial={false}
         animate={{ opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
