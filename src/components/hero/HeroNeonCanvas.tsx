@@ -148,11 +148,14 @@ interface HeroNeonCanvasProps {
   className?: string;
   /** Pausa el loop cuando el fondo no es visible (p. ej. scroll a hero final). */
   active?: boolean;
+  /** Móvil: fija la altura al cargar para evitar saltos cuando cambia la barra del navegador. */
+  pinViewport?: boolean;
 }
 
 export default function HeroNeonCanvas({
   className = "",
   active = true,
+  pinViewport = false,
 }: HeroNeonCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streaksRef = useRef<LightStreak[]>([]);
@@ -164,8 +167,16 @@ export default function HeroNeonCanvas({
   const visibleRef = useRef(true);
   const activeRef = useRef(active);
   const tickRef = useRef<FrameRequestCallback>(() => {});
+  const lockedHeightRef = useRef<number | null>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
   const isMobile = useIsMobile();
+  const shouldPinViewport = pinViewport && isMobile;
+
+  useEffect(() => {
+    if (!shouldPinViewport) {
+      lockedHeightRef.current = null;
+    }
+  }, [shouldPinViewport]);
 
   useEffect(() => {
     activeRef.current = active;
@@ -243,10 +254,25 @@ export default function HeroNeonCanvas({
       ctx.globalCompositeOperation = "source-over";
     };
 
-    const rebuild = () => {
+    const readSize = () => {
       const parent = canvas.parentElement;
       const width = parent?.clientWidth ?? window.innerWidth;
-      const height = parent?.clientHeight ?? window.innerHeight;
+      let height = parent?.clientHeight ?? window.innerHeight;
+
+      if (shouldPinViewport) {
+        if (lockedHeightRef.current === null) {
+          lockedHeightRef.current = Math.round(
+            window.visualViewport?.height ?? window.innerHeight
+          );
+        }
+        height = lockedHeightRef.current;
+      }
+
+      return { width, height };
+    };
+
+    const rebuild = () => {
+      const { width, height } = readSize();
       if (width <= 0 || height <= 0) return;
 
       const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
@@ -260,7 +286,10 @@ export default function HeroNeonCanvas({
       streaksRef.current = createStreaks(width, height, lineCount, dpr);
     };
 
-    const scheduleRebuild = () => {
+    const scheduleRebuild = (forceHeightReset = false) => {
+      if (forceHeightReset) {
+        lockedHeightRef.current = null;
+      }
       if (resizeRafRef.current !== null) return;
       resizeRafRef.current = requestAnimationFrame(() => {
         resizeRafRef.current = null;
@@ -347,12 +376,30 @@ export default function HeroNeonCanvas({
 
     io.observe(canvas);
 
-    const ro = new ResizeObserver(scheduleRebuild);
+    const ro = new ResizeObserver(() => {
+      if (shouldPinViewport) return;
+      scheduleRebuild();
+    });
     const parent = canvas.parentElement;
-    if (parent) ro.observe(parent);
+    if (parent && !shouldPinViewport) ro.observe(parent);
+
+    const onWindowResize = () => {
+      if (shouldPinViewport) {
+        const parent = canvas.parentElement;
+        const width = parent?.clientWidth ?? window.innerWidth;
+        if (width !== sizeRef.current.width) {
+          scheduleRebuild(true);
+        }
+        return;
+      }
+      scheduleRebuild();
+    };
+
+    const onOrientation = () => scheduleRebuild(true);
 
     requestAnimationFrame(start);
-    window.addEventListener("resize", scheduleRebuild, { passive: true });
+    window.addEventListener("resize", onWindowResize);
+    window.addEventListener("orientationchange", onOrientation);
     document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
@@ -362,10 +409,11 @@ export default function HeroNeonCanvas({
       }
       io.disconnect();
       ro.disconnect();
-      window.removeEventListener("resize", scheduleRebuild);
+      window.removeEventListener("resize", onWindowResize);
+      window.removeEventListener("orientationchange", onOrientation);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [isMobile, prefersReducedMotion]);
+  }, [isMobile, prefersReducedMotion, shouldPinViewport]);
 
   return (
     <canvas

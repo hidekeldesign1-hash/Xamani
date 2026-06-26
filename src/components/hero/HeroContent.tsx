@@ -130,7 +130,7 @@ function HeroContent({
     <section
       id="hero"
       aria-label="XAMANI — Intro y Hero"
-      className="relative isolate flex h-[100dvh] min-h-[600px] w-full flex-col overflow-hidden bg-[#0b1520]"
+      className="relative isolate flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#0b1520]"
     >
       <motion.div
         className="pointer-events-none absolute inset-0 z-0"

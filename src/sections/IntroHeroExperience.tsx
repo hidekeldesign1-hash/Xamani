@@ -135,18 +135,24 @@ export default function IntroHeroExperience() {
     savedScrollY.current = maxScroll;
     window.scrollTo({ top: maxScroll, behavior: "instant" as ScrollBehavior });
     document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.backgroundColor = "#0b1520";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.top = `-${maxScroll}px`;
     document.body.style.width = "100%";
+    document.body.style.backgroundColor = "#0b1520";
+    document.body.style.overscrollBehaviorY = "none";
   }, [getMaxScroll]);
 
   const resetBodyScroll = useCallback(() => {
     document.documentElement.style.overflow = "";
+    document.documentElement.style.backgroundColor = "";
     document.body.style.overflow = "";
     document.body.style.position = "";
     document.body.style.top = "";
     document.body.style.width = "";
+    document.body.style.backgroundColor = "";
+    document.body.style.overscrollBehaviorY = "";
     savedScrollY.current = 0;
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
   }, []);
@@ -281,6 +287,20 @@ export default function IntroHeroExperience() {
 
   useEffect(() => () => resetBodyScroll(), [resetBodyScroll]);
 
+  useEffect(() => {
+    if (!isMobile) return;
+    document.documentElement.style.backgroundColor = "#0b1520";
+    document.documentElement.style.overscrollBehaviorY = "none";
+    document.body.style.backgroundColor = "#0b1520";
+    document.body.style.overscrollBehaviorY = "none";
+    return () => {
+      document.documentElement.style.backgroundColor = "";
+      document.documentElement.style.overscrollBehaviorY = "";
+      document.body.style.backgroundColor = "";
+      document.body.style.overscrollBehaviorY = "";
+    };
+  }, [isMobile]);
+
   const completeTransition = useCallback(() => {
     if (stageRef.current === "frozen") return;
     const maxScroll = getMaxScroll();
@@ -303,8 +323,8 @@ export default function IntroHeroExperience() {
   }, [scrollYProgress, completeTransition, nudgeScroll]);
 
   const totalHeight = prefersReducedMotion
-    ? "100dvh"
-    : `calc(100dvh + ${isMobile ? MOBILE_SCROLL_VH : SCROLL_VH}dvh)`;
+    ? "100svh"
+    : `calc(100svh + ${isMobile ? MOBILE_SCROLL_VH : SCROLL_VH}svh)`;
 
   const heroInteractive =
     stage === "frozen" || visual.menuOpacity > 0.75;
@@ -314,11 +334,11 @@ export default function IntroHeroExperience() {
       <div
         ref={scrollRef}
         style={{ height: totalHeight }}
-        className="relative"
+        className="relative bg-[#0b1520]"
         aria-hidden="true"
       />
 
-      <div className="fixed inset-0 z-10">
+      <div className="fixed inset-0 z-10 min-h-[100svh] bg-[#0b1520]">
         <HeroContent
           ready={ready}
           heroInteractive={heroInteractive}

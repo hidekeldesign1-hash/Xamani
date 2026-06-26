@@ -288,6 +288,31 @@ export default function ElManifiesto() {
     applyScrollMotion(scrollYProgress.get());
   }, [applyScrollMotion, scrollYProgress]);
 
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const lockViewport = () => {
+      const h = Math.round(window.visualViewport?.height ?? window.innerHeight);
+      document.documentElement.style.setProperty("--manifiesto-vh", `${h}px`);
+    };
+
+    document.documentElement.style.backgroundColor = "#0b1520";
+    document.documentElement.style.overscrollBehaviorY = "none";
+    document.body.style.backgroundColor = "#0b1520";
+    document.body.style.overscrollBehaviorY = "none";
+    lockViewport();
+
+    window.addEventListener("orientationchange", lockViewport);
+    return () => {
+      window.removeEventListener("orientationchange", lockViewport);
+      document.documentElement.style.removeProperty("--manifiesto-vh");
+      document.documentElement.style.backgroundColor = "";
+      document.documentElement.style.overscrollBehaviorY = "";
+      document.body.style.backgroundColor = "";
+      document.body.style.overscrollBehaviorY = "";
+    };
+  }, [isMobile]);
+
   const nudgeScroll = useCallback(() => {
     window.scrollBy({ top: window.innerHeight * (isMobile ? 0.22 : 0.18), behavior: "smooth" });
   }, [isMobile]);
@@ -305,8 +330,12 @@ export default function ElManifiesto() {
         aria-hidden="true"
       />
 
-      <div className="pointer-events-none fixed inset-0 z-[6]">
-        <HeroNeonCanvas className="absolute inset-0 h-full w-full" active />
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-[6] bg-[#0b1520] max-md:h-[var(--manifiesto-vh,100svh)] md:inset-0">
+        <HeroNeonCanvas
+          className="absolute inset-0 h-full w-full"
+          active
+          pinViewport={isMobile}
+        />
         <div
           className="absolute inset-0 bg-gradient-to-b from-[#0b1520]/35 via-transparent to-[#0b1520]/60"
           aria-hidden="true"
