@@ -39,16 +39,13 @@ function finalVisual(isotipoFinal: number) {
     menuOpacity: 1,
     menuY: -20,
     streakOpacity: 0,
-    streakBlur: 0,
-    streakScale: 1,
   };
 }
 
 function visualFromProgress(
   v: number,
   isotipoIntro: number,
-  isotipoFinal: number,
-  isMobile = false
+  isotipoFinal: number
 ) {
   return {
     brandTopGap: `${lerp([0, 1], [22, 6], v)}vh`,
@@ -59,8 +56,6 @@ function visualFromProgress(
     menuOpacity: lerp([0.42, 0.72], [0, 1], v),
     menuY: lerp([0.42, 0.72], [12, -20], v),
     streakOpacity: lerp([0, 0.55, 0.85], [1, 0.35, 0], v),
-    streakBlur: isMobile ? 0 : lerp([0, 0.75], [0, 28], v),
-    streakScale: isMobile ? 1 : lerp([0, 0.85], [1, 1.08], v),
   };
 }
 
@@ -86,8 +81,6 @@ export default function IntroHeroExperience() {
     menuOpacity: 0,
     menuY: 12,
     streakOpacity: 1,
-    streakBlur: 0,
-    streakScale: 1,
   });
 
   const { scrollYProgress } = useScroll({
@@ -164,7 +157,7 @@ export default function IntroHeroExperience() {
     if (stageRef.current === "frozen") return;
 
     if (unfreezingRef.current) {
-      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
+      setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal));
       return;
     }
 
@@ -173,7 +166,7 @@ export default function IntroHeroExperience() {
       return;
     }
 
-    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal, isMobile));
+    setVisual(visualFromProgress(v, isotipoIntro, isotipoFinal));
   });
 
   useEffect(() => {

@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import Logo from "@/components/brand/Logo";
 import Isotipo from "@/components/brand/Isotipo";
 import Tagline from "@/components/brand/Tagline";
+import HeroNeonCanvas from "@/components/hero/HeroNeonCanvas";
 import ScrollIndicator from "@/components/navigation/ScrollIndicator";
 import SocialFooter from "@/components/navigation/SocialFooter";
 import HeroMenu from "@/components/navigation/HeroMenu";
@@ -23,8 +23,6 @@ interface HeroContentProps {
   menuOpacity: number;
   menuY: number;
   streakOpacity?: number;
-  streakBlur?: number;
-  streakScale?: number;
 }
 
 function BrandingBlock({
@@ -156,46 +154,34 @@ function HeroContent({
   discoverOpacity,
   menuOpacity,
   menuY,
-  streakOpacity = 0,
-  streakBlur = 0,
-  streakScale = 1,
+  streakOpacity = 1,
 }: HeroContentProps) {
-  const prefersReducedMotion = useReducedMotion() ?? false;
   const mobileMenuMode = menuOpacity > 0.45;
 
   return (
     <section
       id="hero"
       aria-label="XAMANI — Intro y Hero"
-      className="flex h-[100dvh] min-h-[600px] w-full flex-col overflow-hidden bg-xamani-navy-surface"
+      className="relative isolate flex h-[100dvh] min-h-[600px] w-full flex-col overflow-hidden bg-[#0b1520]"
     >
-      <div className="absolute inset-0 bg-xamani-navy-surface" aria-hidden="true" />
-
       <motion.div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          opacity: streakOpacity,
-          filter: `blur(${streakBlur}px)`,
-          scale: streakScale,
-        }}
+        className="pointer-events-none absolute inset-0 z-0"
+        initial={false}
+        animate={{ opacity: ready ? streakOpacity : 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        <motion.div
-          className="absolute inset-0"
-          initial={prefersReducedMotion ? false : { opacity: 0, scale: 1.05 }}
-          animate={{ opacity: ready ? 1 : 0, scale: 1 }}
-          transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Image
-            src="/images/intro-bg.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-xamani-navy-surface/30 via-transparent to-xamani-navy-surface/60" />
-        </motion.div>
-        <div className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-xamani-navy-surface to-transparent" />
+        <HeroNeonCanvas
+          className="absolute inset-0 h-full w-full"
+          active={ready && streakOpacity > 0.02}
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#0b1520]/25 via-transparent to-[#0b1520]/45"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-t from-[#0b1520]/80 to-transparent"
+          aria-hidden="true"
+        />
       </motion.div>
 
       {/* Móvil */}
