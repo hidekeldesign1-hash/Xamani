@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tipografías cargadas vía next/font/local en layout.tsx (archivos .otf en /public/fonts/) */
+
+@layer base {
+  :root {
+    --color-bg: #113345;
+    --color-text: #babab9;
+    --color-accent-wine: #771335;
+    --color-accent-cyan: #6ec4d9;
+    --nav-offset: 5.5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-xamani-navy font-archia text-xamani-silver antialiased;
+  }
+
+  [id="manifiesto"],
+  [id="modelo-negocio"],
+  [id="unirme-equipo"],
+  [id="agenda-asesoria"],
+  [id="nuestra-historia"] {
+    scroll-margin-top: var(--nav-offset);
+  }
+
+  @media (max-width: 767px) {
+    :root {
+      --nav-offset: 1.25rem;
+    }
+
+    html {
+      scroll-padding-bottom: 7rem;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-ambit;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply rounded-card border border-white/10 bg-white/5 shadow-glass backdrop-blur-glass;
+  }
+
+  .section-padding {
+    @apply px-6 py-section md:px-12 lg:px-20;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

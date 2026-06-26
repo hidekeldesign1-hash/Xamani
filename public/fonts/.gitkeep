@@ -1,0 +1,9 @@
+Tipografías oficiales XAMANI (.otf)
+
+Ambit (títulos):
+- Ambit Light.otf · Regular · SemiBold · Bold (+ variantes Thin, ExtraLight, Black, Italic)
+
+Archia (cuerpo):
+- Archia-Regular.otf
+
+Cargadas en src/app/layout.tsx con next/font/local.
