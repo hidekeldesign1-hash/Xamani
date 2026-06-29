@@ -5,7 +5,7 @@ import Isotipo from "@/components/brand/Isotipo";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/Reveal";
 import SocialFooter from "@/components/navigation/SocialFooter";
 import PillLink from "@/components/ui/PillLink";
-import { WHATSAPP_ASESORIA_URL, XAMANI_PHONE_DISPLAY, XAMANI_PHONE_TEL } from "@/data/contact";
+import { WHATSAPP_JOIN_URL, XAMANI_PHONE_DISPLAY, XAMANI_PHONE_TEL } from "@/data/contact";
 
 interface SiteFooterProps {
   className?: string;
@@ -48,10 +48,10 @@ export default function SiteFooter({ className = "" }: SiteFooterProps) {
               <ul className="space-y-2 font-archia text-sm text-xamani-silver/75">
                 <li>
                   <a
-                    href="mailto:HOLA@XAMANI.COM.MX"
+                    href="mailto:hola@xamani.com.mx"
                     className="transition-colors hover:text-xamani-silver"
                   >
-                    HOLA@XAMANI.COM.MX
+                    hola@xamani.com.mx
                   </a>
                 </li>
                 <li>
@@ -101,10 +101,10 @@ export default function SiteFooter({ className = "" }: SiteFooterProps) {
               © {new Date().getFullYear()} XAMANI. Todos los derechos reservados.
             </p>
             <PillLink
-              href={WHATSAPP_ASESORIA_URL}
+              href={WHATSAPP_JOIN_URL}
               className="!bg-xamani-cyan !text-xamani-navy hover:!shadow-glow"
             >
-              Agenda una asesoría
+              Conviértete en Xamani
             </PillLink>
           </div>
         </div>

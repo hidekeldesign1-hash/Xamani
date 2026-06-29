@@ -18,9 +18,9 @@ export const AGENTES_DATA: Agente[] = [
   {
     nombre: "Lucinda Lara y Abril Ortiz",
     marca: "Lucinda Lara seguros",
-    lema: "“Unámonos todos por aquel que caiga en desgracia.”",
+    lema: "“25 años cuidando el futuro de quienes más importan.”",
     descripcion:
-      "Ese es el verdadero significado del seguro: la solidaridad, la prevención y la tranquilidad. Porque asegurar no solo es proteger un patrimonio; es cuidar el futuro de quienes más importan. 25 años cuidando el futuro de quienes más importan.",
+      "Unámonos todos por aquel que caiga en desgracia. Ese es el verdadero significado del seguro: la solidaridad, la prevención y la tranquilidad. Porque asegurar no solo es proteger un patrimonio; es cuidar el futuro de quienes más importan.",
     instagram: "@lucindalaraseguros",
     whatsapp: "5539617361",
     foto: "/agentes/lucinda-lara-abril.png",

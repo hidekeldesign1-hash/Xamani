@@ -1,6 +1,6 @@
 import { Reveal } from "@/components/motion/Reveal";
 import PillLink from "@/components/ui/PillLink";
-import { WHATSAPP_ASESORIA_URL, WHATSAPP_JOIN_URL } from "@/data/contact";
+import { WHATSAPP_JOIN_URL } from "@/data/contact";
 import AgendaCtaBlock from "@/sections/landing/AgendaCtaBlock";
 import AgentesCarousel from "@/sections/landing/agentes/AgentesCarousel";
 import SectionHeading from "@/sections/landing/shared/SectionHeading";
@@ -9,7 +9,7 @@ export default function UnirmeEquipo() {
   return (
     <section
       id="unirme-equipo"
-      aria-label="Conviertete en Xamani"
+      aria-label="Conviértete en Xamani"
       className="relative w-full overflow-hidden bg-xamani-canvas"
     >
       <div className="section-padding mx-auto max-w-7xl">
@@ -43,7 +43,7 @@ export default function UnirmeEquipo() {
               conocerte.
             </p>
             <PillLink
-              href={WHATSAPP_ASESORIA_URL}
+              href={WHATSAPP_JOIN_URL}
               className="normal-case !px-5 !py-3.5 !text-sm !leading-snug !tracking-normal sm:!px-7 sm:!text-base"
             >
               ¿Listo para construir lo que trasciende?

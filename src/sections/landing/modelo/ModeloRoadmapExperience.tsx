@@ -85,7 +85,7 @@ function StaticRoadmap() {
           {MODELO_CTA_COPY}
         </p>
         <PillLink href={ROUTES.equipo} className="min-w-[16rem] justify-center">
-          Conviertete en Xamani
+          Conviértete en Xamani
         </PillLink>
       </aside>
     </div>

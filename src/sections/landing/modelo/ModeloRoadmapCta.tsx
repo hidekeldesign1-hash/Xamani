@@ -43,7 +43,7 @@ export default function ModeloRoadmapCta({ visible }: ModeloRoadmapCtaProps) {
         </p>
         <div className="flex justify-center">
           <PillLink href={ROUTES.equipo} className="min-w-[16rem] justify-center">
-            Conviertete en Xamani
+            Conviértete en Xamani
           </PillLink>
         </div>
       </motion.aside>

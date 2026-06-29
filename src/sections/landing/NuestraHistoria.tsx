@@ -253,6 +253,7 @@ export default function NuestraHistoria() {
               <HistoriaImageFrame
                 alt="Marilupe Ugarte de la Vega — retrato histórico"
                 caption="Marilupe Ugarte de la Vega"
+                src="/historia/marilupe-ugarte.png"
               />
             </Reveal>
           </div>
@@ -264,39 +265,51 @@ export default function NuestraHistoria() {
         aria-labelledby="capitulo-evolucion"
         className="border-t border-white/[0.06]"
       >
-        <div className="section-padding mx-auto max-w-4xl py-24 text-center lg:py-32">
-          <Reveal>
-            <ChapterLabel>La Evolución</ChapterLabel>
-            <p className="mb-10 font-archia text-xs uppercase tracking-[0.2em] text-xamani-silver-muted">
-              XAMANI
-            </p>
-          </Reveal>
+        <div className="section-padding mx-auto max-w-7xl py-24 lg:py-32">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
+            <Reveal delay={0.08}>
+              <HistoriaImageFrame
+                alt="XAMANI — nueva etapa"
+                caption="XAMANI"
+                src="/historia/xamani-evolucion.png"
+              />
+            </Reveal>
 
-          <RevealStagger className="space-y-8" stagger={0.12}>
-            <RevealItem>
-              <p
-                id="capitulo-evolucion"
-                className="font-archia text-base leading-[1.9] text-xamani-silver-muted sm:text-lg"
-              >
-                Durante más de medio siglo dos generaciones sostuvieron y
-                desarrollaron esta organización convirtiéndola en un referente de
-                liderazgo, formación y excelencia dentro de la industria.
-              </p>
-            </RevealItem>
-
-            <RevealItem>
-              <p className="font-archia text-base leading-[1.9] text-xamani-silver-muted sm:text-lg">
-                Hoy, ese legado entra en una nueva etapa. Una etapa de evolución,
-                transformación y visión renovada. Ese nuevo capítulo se llama{" "}
-                <span className="font-ambit text-xl font-bold tracking-[0.2em] text-xamani-silver sm:text-2xl">
+            <div className="flex flex-col items-center justify-center text-center">
+              <Reveal delay={0.12} className="mb-8">
+                <ChapterLabel>La Evolución</ChapterLabel>
+                <p className="font-archia text-xs uppercase tracking-[0.2em] text-xamani-silver-muted">
                   XAMANI
-                </span>
-                .
-              </p>
-            </RevealItem>
-          </RevealStagger>
+                </p>
+              </Reveal>
 
-          <Reveal delay={0.2} className="mt-14">
+              <RevealStagger className="max-w-prose space-y-6" stagger={0.12}>
+                <RevealItem>
+                  <p
+                    id="capitulo-evolucion"
+                    className="font-archia text-base leading-[1.9] text-xamani-silver-muted sm:text-lg"
+                  >
+                    Durante más de medio siglo dos generaciones sostuvieron y
+                    desarrollaron esta organización convirtiéndola en un referente de
+                    liderazgo, formación y excelencia dentro de la industria.
+                  </p>
+                </RevealItem>
+
+                <RevealItem>
+                  <p className="font-archia text-base leading-[1.9] text-xamani-silver-muted sm:text-lg">
+                    Hoy, ese legado entra en una nueva etapa. Una etapa de evolución,
+                    transformación y visión renovada. Ese nuevo capítulo se llama{" "}
+                    <span className="font-ambit text-xl font-bold tracking-[0.2em] text-xamani-silver sm:text-2xl">
+                      XAMANI
+                    </span>
+                    .
+                  </p>
+                </RevealItem>
+              </RevealStagger>
+            </div>
+          </div>
+
+          <Reveal delay={0.2} className="mt-14 text-center">
             <div className="mx-auto h-px w-24 bg-gradient-to-r from-xamani-cyan via-xamani-silver/50 to-xamani-wine" />
           </Reveal>
         </div>

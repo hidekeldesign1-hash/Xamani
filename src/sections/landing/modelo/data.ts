@@ -95,7 +95,7 @@ export const DESKTOP_CTA_THRESHOLD = 0.97;
 export const CTA_THRESHOLD = 0.9;
 
 export const MODELO_CTA_COPY =
-  "Nosotros te decimos cómo, tú decides cuándo";
+  "Nosotros te decimos cómo, tú decides cuándo.";
 
 export const ROADMAP_ASPECT_RATIO = `${ROADMAP_VIEWBOX.width} / ${ROADMAP_VIEWBOX.height}`;
 

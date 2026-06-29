@@ -37,7 +37,7 @@ export const HERO_MENU_ITEMS: HeroMenuItem[] = [
   },
   {
     id: "equipo",
-    label: "Conviertete en Xamani",
+    label: "Conviértete en Xamani",
     subtitle: "Sé parte de algo grande.",
     href: ROUTES.equipo,
     icon: "team",
