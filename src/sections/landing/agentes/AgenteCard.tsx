@@ -78,7 +78,7 @@ export default function AgenteCard({
         </p>
 
         <div className="mt-2 min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-none [touch-action:pan-y]">
-          <p className="font-archia text-xs leading-relaxed text-xamani-silver-muted sm:text-sm">
+          <p className="whitespace-pre-line font-archia text-xs leading-relaxed text-xamani-silver-muted sm:text-sm">
             {agente.descripcion}
           </p>
         </div>

@@ -53,7 +53,7 @@ export const HERO_MENU_ITEMS: HeroMenuItem[] = [
   },
   {
     id: "asesoria",
-    label: "Agenda una Asesoría",
+    label: "Atrévete",
     subtitle: "Hablemos de tu visión.",
     href: ROUTES.asesoria,
     icon: "calendar",

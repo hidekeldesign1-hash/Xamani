@@ -30,6 +30,9 @@ export default function SiteFooter({ className = "" }: SiteFooterProps) {
               Elegimos construir lo que{" "}
               <span className="text-xamani-cyan">trasciende.</span>
             </p>
+            <p className="mt-3 max-w-lg font-archia text-sm italic leading-relaxed text-xamani-silver/85 sm:text-base">
+              Nosotros te decimos cómo, tú decides cuándo.
+            </p>
           </div>
         </Reveal>
 

@@ -1,7 +1,6 @@
 import TestimonialCard from "@/components/cards/TestimonialCard";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/Reveal";
-import MediaPlaceholder from "@/sections/landing/shared/MediaPlaceholder";
-import AgendaWhatsAppForm from "./AgendaWhatsAppForm";
+import AgendaCtaBlock from "./AgendaCtaBlock";
 
 const TESTIMONIALS = [
   {
@@ -46,27 +45,7 @@ export default function AgendaAsesoria() {
           ))}
         </RevealStagger>
 
-        <Reveal>
-          <div className="grid items-center gap-10 rounded-card-lg border border-white/10 bg-gradient-to-br from-xamani-navy-light/30 to-xamani-navy-deep p-8 sm:p-12 lg:grid-cols-2 lg:gap-14">
-            <div>
-              <h3 className="mb-4 font-ambit text-display-md text-xamani-silver">
-                ¿Listo para construir lo que{" "}
-                <span className="text-xamani-cyan">trasciende</span>?
-              </h3>
-              <p className="mb-8 font-archia text-sm leading-relaxed text-xamani-silver-muted sm:text-base">
-                Agenda una sesión de diagnóstico sin compromiso. Conversemos sobre
-                tus objetivos y diseñemos juntos el primer paso hacia una asesoría
-                con propósito.
-              </p>
-              <AgendaWhatsAppForm />
-            </div>
-            <MediaPlaceholder
-              aspect="landscape"
-              label="Asesoría personalizada"
-              className="lg:mt-0"
-            />
-          </div>
-        </Reveal>
+        <AgendaCtaBlock />
       </div>
     </section>
   );

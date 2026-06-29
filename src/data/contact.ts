@@ -8,6 +8,8 @@ export const WHATSAPP_JOIN_MESSAGE = "Quiero ser Xamani, dame mas información";
 
 export const WHATSAPP_ASESORIA_MESSAGE = "Busco una asesoria";
 
+export const WHATSAPP_ASESORIA_PHONE = "525573966005";
+
 export const XAMANI_SOCIAL_LINKS = {
   instagram:
     "https://www.instagram.com/xamanimx?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
@@ -52,7 +54,7 @@ export function buildAsesoriaWhatsAppUrl(fullName = "") {
     ? `${WHATSAPP_ASESORIA_MESSAGE}. Mi nombre es ${trimmed}`
     : WHATSAPP_ASESORIA_MESSAGE;
 
-  return buildWhatsAppUrl(message);
+  return `https://wa.me/${WHATSAPP_ASESORIA_PHONE}?text=${encodeURIComponent(message)}`;
 }
 
 export const WHATSAPP_ASESORIA_URL = buildAsesoriaWhatsAppUrl();

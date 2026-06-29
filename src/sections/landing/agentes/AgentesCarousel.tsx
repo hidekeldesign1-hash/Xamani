@@ -295,8 +295,8 @@ export default function AgentesCarousel() {
     <div ref={containerRef} className="relative">
       <p className="mb-4 font-archia text-xs text-xamani-silver-muted sm:text-sm">
         {isMobile
-          ? "Desliza horizontalmente o usa las flechas para conocer a nuestros agentes"
-          : "Desliza o usa el scroll horizontal para conocer a nuestros agentes"}
+          ? "Desliza horizontalmente o usa las flechas para conocer a nuestros asesores"
+          : "Desliza o usa el scroll horizontal para conocer a nuestros asesores"}
       </p>
 
       <div className="relative -mx-6 sm:mx-0 sm:flex sm:items-center sm:gap-3 md:gap-4">
