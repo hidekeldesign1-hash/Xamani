@@ -6,13 +6,12 @@ import {
   useTransform,
   motion,
 } from "framer-motion";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, startTransition } from "react";
 import ScrollIndicator from "@/components/navigation/ScrollIndicator";
 import PillLink from "@/components/ui/PillLink";
 import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
 import { ROUTES } from "@/data/heroMenu";
 import {
-  DESKTOP_CTA_THRESHOLD,
   MODELO_CTA_COPY,
   MODELO_STEPS,
 } from "./data";
@@ -22,6 +21,10 @@ import ModeloRoadmapGlyph from "./ModeloRoadmapGlyph";
 import ModeloRoadmapPath from "./ModeloRoadmapPath";
 import ModeloStepCard from "./ModeloStepCard";
 import ModeloStepNode from "./ModeloStepNode";
+import {
+  computeRevealedScrollState,
+  type RevealedScrollState,
+} from "./roadmapScrollState";
 import { useIsMobile } from "./useIsMobile";
 
 /** Espacio de scroll antes de que inicie la animación del mapa */
@@ -89,16 +92,24 @@ function StaticRoadmap() {
   );
 }
 
+const INITIAL_SCROLL_STATE: RevealedScrollState = {
+  revealedIds: new Set(),
+  activeStepId: null,
+  activeTitle: "Inicio",
+  ctaRevealed: false,
+  showScrollHint: true,
+};
+
 export default function ModeloRoadmapExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
   const isMobile = useIsMobile();
   const scrollSegments = getScrollSegments(isMobile);
-  const [revealedIds, setRevealedIds] = useState<Set<string>>(() => new Set());
-  const [ctaRevealed, setCtaRevealed] = useState(false);
-  const [showScrollHint, setShowScrollHint] = useState(true);
-  const [activeTitle, setActiveTitle] = useState("Inicio");
-  const [activeStepId, setActiveStepId] = useState<string | null>(null);
+  const [scrollState, setScrollState] =
+    useState<RevealedScrollState>(INITIAL_SCROLL_STATE);
+
+  const { revealedIds, ctaRevealed, showScrollHint, activeTitle, activeStepId } =
+    scrollState;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -111,39 +122,17 @@ export default function ModeloRoadmapExperience() {
 
   const updateRevealed = useCallback(
     (anim: number, raw: number) => {
-      setRevealedIds((prev) => {
-        const next = new Set(prev);
-        for (const step of MODELO_STEPS) {
-          if (anim >= step.threshold) {
-            next.add(step.id);
-          } else if (anim < step.threshold - REVEAL_BACK_BUFFER) {
-            next.delete(step.id);
-          }
-        }
-        return next;
+      startTransition(() => {
+        setScrollState((prev) =>
+          computeRevealedScrollState(anim, raw, prev, {
+            isMobile,
+            ctaRawStart: scrollSegments.ctaRawStart,
+            leadRatio: scrollSegments.leadRatio,
+            animSpan: scrollSegments.animSpan,
+            revealBackBuffer: REVEAL_BACK_BUFFER,
+          })
+        );
       });
-
-      const showCta = isMobile
-        ? raw >= scrollSegments.ctaRawStart
-        : anim >= DESKTOP_CTA_THRESHOLD;
-
-      if (showCta) {
-        setCtaRevealed(true);
-      } else if (
-        isMobile
-          ? raw < scrollSegments.ctaRawStart - REVEAL_BACK_BUFFER
-          : anim < DESKTOP_CTA_THRESHOLD - REVEAL_BACK_BUFFER
-      ) {
-        setCtaRevealed(false);
-      }
-
-      const activeStep =
-        MODELO_STEPS.filter((s) => anim >= s.threshold).slice(-1)[0] ?? null;
-      setActiveTitle(activeStep?.title ?? "Inicio");
-      setActiveStepId(activeStep?.id ?? null);
-
-      const hintFadeEnd = scrollSegments.leadRatio + scrollSegments.animSpan * 0.1;
-      setShowScrollHint(!showCta && raw < hintFadeEnd);
     },
     [
       isMobile,
@@ -174,18 +163,17 @@ export default function ModeloRoadmapExperience() {
     >
       <div className="roadmap-sticky-viewport sticky top-0 relative flex min-h-[480px] overflow-hidden max-md:top-0 md:min-h-[520px]"
       >
-        <motion.div
-          className="relative mx-auto flex h-full w-full max-w-5xl flex-col justify-center px-3 max-md:justify-start max-md:pt-5 max-md:pb-5 sm:px-6 md:px-6 md:pb-6 md:pt-10"
-          initial={false}
-          animate={{
-            opacity: ctaRevealed ? 0.2 : 1,
-            filter: ctaRevealed && !prefersReducedMotion ? "blur(6px)" : "blur(0px)",
-          }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{ pointerEvents: ctaRevealed ? "none" : "auto" }}
+        <div
+          className={`relative mx-auto flex h-full w-full max-w-5xl flex-col justify-center px-3 transition-[opacity,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-md:justify-start max-md:pt-5 max-md:pb-5 sm:px-6 md:px-6 md:pb-6 md:pt-10 ${
+            ctaRevealed ? "pointer-events-none opacity-20" : "opacity-100"
+          } ${
+            ctaRevealed && !prefersReducedMotion
+              ? "blur-[6px] [transform:translateZ(0)]"
+              : "blur-0"
+          }`}
         >
-          <div className="relative min-h-0 w-full flex-1 max-md:translate-y-5 [perspective:1200px]">
-            <div className="relative h-full w-full origin-center [transform-style:preserve-3d] [transform:rotateX(15deg)] [backface-visibility:hidden]">
+          <div className="roadmap-perspective relative min-h-0 w-full flex-1 max-md:translate-y-5">
+            <div className="roadmap-3d-plane relative h-full w-full">
               <ModeloRoadmapCanvas>
                 <ModeloRoadmapPath progress={animProgress} />
                 <ModeloRoadmapGlyph
@@ -199,6 +187,7 @@ export default function ModeloRoadmapExperience() {
                     step={step}
                     visible={revealedIds.has(step.id)}
                     activeStepId={activeStepId}
+                    isMobile={isMobile}
                   />
                 ))}
               </ModeloRoadmapCanvas>
@@ -209,11 +198,12 @@ export default function ModeloRoadmapExperience() {
                   step={step}
                   visible={revealedIds.has(step.id)}
                   activeStepId={activeStepId}
+                  isMobile={isMobile}
                 />
               ))}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* CTA a nivel del viewport sticky — blur cubre toda el área visible */}
         <ModeloRoadmapCta visible={ctaRevealed} />

@@ -1,43 +1,43 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { memo } from "react";
 import type { ModeloStep } from "./data";
 import { ROADMAP_VIEWBOX } from "./data";
 import { getStepDepthStyle } from "./roadmapDepth";
+import {
+  getNodeMotionStyle,
+  getStepMotionTransition,
+  ROADMAP_DEPTH_EASE,
+} from "./roadmapScrollState";
 
 interface ModeloStepNodeProps {
   step: ModeloStep;
   visible: boolean;
   activeStepId: string | null;
+  isMobile: boolean;
 }
 
-export default function ModeloStepNode({
+function ModeloStepNode({
   step,
   visible,
   activeStepId,
+  isMobile,
 }: ModeloStepNodeProps) {
   const leftPct = (step.node.x / ROADMAP_VIEWBOX.width) * 100;
   const topPct = (step.node.y / ROADMAP_VIEWBOX.height) * 100;
   const depth = getStepDepthStyle(step.id, activeStepId, visible);
   const isFocused = visible && step.id === activeStepId;
+  const motionStyle = getNodeMotionStyle(depth, visible, isFocused);
+  const transition = getStepMotionTransition(isMobile);
 
   return (
-    <motion.div
-      className="pointer-events-none absolute z-[1] will-change-[transform,opacity,filter]"
-      initial={false}
-      animate={{
-        opacity: visible ? depth.opacity : 0,
-        scale: visible ? (isFocused ? 1.25 : depth.scale * 1.05) : 0.75,
-        filter: visible
-          ? `blur(${depth.blurPx}px) drop-shadow(0 10px 16px rgba(119, 19, 53, 0.4))`
-          : "blur(1px)",
-      }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      className="roadmap-step-node pointer-events-none absolute z-[1] will-change-transform"
       style={{
         left: `${leftPct}%`,
         top: `${topPct}%`,
-        translateX: "-50%",
-        translateY: "-50%",
+        ...motionStyle,
+        transition: `opacity ${transition.duration}s ${ROADMAP_DEPTH_EASE}, transform ${transition.duration}s ${ROADMAP_DEPTH_EASE}, filter ${transition.duration}s ${ROADMAP_DEPTH_EASE}`,
       }}
     >
       {visible && (
@@ -71,6 +71,8 @@ export default function ModeloStepNode({
         />
       </svg>
       <span className="sr-only">{step.title}</span>
-    </motion.div>
+    </div>
   );
 }
+
+export default memo(ModeloStepNode);

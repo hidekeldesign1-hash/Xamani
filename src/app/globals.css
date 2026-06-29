@@ -133,4 +133,37 @@
       background-color: rgba(11, 21, 32, 0.98);
     }
   }
+
+  .roadmap-perspective {
+    perspective: 1200px;
+    transform: translateZ(0);
+  }
+
+  .roadmap-3d-plane {
+    transform: rotateX(15deg) translateZ(0);
+    transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    contain: layout style;
+    will-change: transform;
+  }
+
+  .roadmap-glyph,
+  .roadmap-step-card,
+  .roadmap-step-node,
+  .roadmap-path {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .roadmap-card-glass {
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+
+    .roadmap-3d-plane {
+      contain: layout style paint;
+    }
+  }
 }

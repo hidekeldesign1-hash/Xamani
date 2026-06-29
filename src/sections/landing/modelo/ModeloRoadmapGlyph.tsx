@@ -21,6 +21,7 @@ export default function ModeloRoadmapGlyph({
   resolveProgress,
 }: ModeloRoadmapGlyphProps) {
   const glyphRef = useRef<HTMLDivElement>(null);
+  const lastProgressRef = useRef(-1);
 
   const readProgress = useCallback(() => {
     if (scrollYProgress && resolveProgress) {
@@ -29,93 +30,71 @@ export default function ModeloRoadmapGlyph({
     return progress.get();
   }, [progress, scrollYProgress, resolveProgress]);
 
-  const applyProgress = useCallback(
-    (value: number) => {
-      const glyph = glyphRef.current;
-      if (!glyph) return;
+  const applyProgress = useCallback((value: number) => {
+    if (Math.abs(value - lastProgressRef.current) < 0.0001) return;
+    lastProgressRef.current = value;
 
-      const { x, y } = getRoadmapPointAtProgress(value);
-      const left = (x / ROADMAP_VIEWBOX.width) * 100;
-      const top = (y / ROADMAP_VIEWBOX.height) * 100;
+    const glyph = glyphRef.current;
+    if (!glyph) return;
 
-      glyph.style.left = `${left}%`;
-      glyph.style.top = `${top}%`;
-      glyph.style.transform = "translate3d(-50%, -50%, 0)";
-      glyph.style.opacity = value <= 0.002 ? "0.85" : "1";
-    },
-    []
-  );
+    const { x, y } = getRoadmapPointAtProgress(value);
+    const leftPct = (x / ROADMAP_VIEWBOX.width) * 100;
+    const topPct = (y / ROADMAP_VIEWBOX.height) * 100;
 
-  const syncGlyph = useCallback(() => {
-    applyProgress(readProgress());
-  }, [applyProgress, readProgress]);
+    // left/top % son relativos al contenedor del mapa; translate(-50%) centra el isotipo.
+    glyph.style.left = `${leftPct}%`;
+    glyph.style.top = `${topPct}%`;
+    glyph.style.transform = "translate3d(-50%, -50%, 0)";
+    glyph.style.opacity = value <= 0.002 ? "0.85" : "1";
+  }, []);
 
   useLayoutEffect(() => {
-    syncGlyph();
-
-    const unsubProgress = progress.on("change", applyProgress);
-    const unsubScroll =
-      scrollYProgress?.on("change", syncGlyph) ?? (() => undefined);
-
     let rafId = 0;
-    let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
-    let ticking = false;
+    let scheduled = false;
 
-    const tick = () => {
-      syncGlyph();
-      if (ticking) {
-        rafId = requestAnimationFrame(tick);
-      }
+    const scheduleSync = () => {
+      if (scheduled) return;
+      scheduled = true;
+      rafId = requestAnimationFrame(() => {
+        scheduled = false;
+        applyProgress(readProgress());
+      });
     };
 
-    const startTicking = () => {
-      if (ticking) return;
-      ticking = true;
-      rafId = requestAnimationFrame(tick);
-    };
+    scheduleSync();
 
-    const stopTicking = () => {
-      ticking = false;
-      cancelAnimationFrame(rafId);
-      syncGlyph();
-    };
+    const unsubProgress = progress.on("change", scheduleSync);
+    const unsubScroll =
+      scrollYProgress?.on("change", scheduleSync) ?? (() => undefined);
 
-    const onScrollActivity = () => {
-      syncGlyph();
-      startTicking();
-      if (scrollEndTimer) clearTimeout(scrollEndTimer);
-      scrollEndTimer = setTimeout(stopTicking, 120);
-    };
-
-    window.addEventListener("scroll", onScrollActivity, { passive: true });
-    window.addEventListener("touchend", onScrollActivity, { passive: true });
-    window.visualViewport?.addEventListener("scroll", onScrollActivity, {
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("touchend", scheduleSync, { passive: true });
+    window.visualViewport?.addEventListener("scroll", scheduleSync, {
       passive: true,
     });
-    window.visualViewport?.addEventListener("resize", onScrollActivity, {
+    window.visualViewport?.addEventListener("resize", scheduleSync, {
       passive: true,
     });
     if ("onscrollend" in window) {
-      window.addEventListener("scrollend", onScrollActivity, { passive: true });
+      window.addEventListener("scrollend", scheduleSync, { passive: true });
     }
 
     return () => {
       unsubProgress();
       unsubScroll();
-      stopTicking();
-      if (scrollEndTimer) clearTimeout(scrollEndTimer);
-      window.removeEventListener("scroll", onScrollActivity);
-      window.removeEventListener("touchend", onScrollActivity);
-      window.removeEventListener("scrollend", onScrollActivity);
-      window.visualViewport?.removeEventListener("scroll", onScrollActivity);
-      window.visualViewport?.removeEventListener("resize", onScrollActivity);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("touchend", scheduleSync);
+      window.removeEventListener("scrollend", scheduleSync);
+      window.visualViewport?.removeEventListener("scroll", scheduleSync);
+      window.visualViewport?.removeEventListener("resize", scheduleSync);
     };
-  }, [progress, scrollYProgress, applyProgress, syncGlyph]);
+  }, [progress, scrollYProgress, applyProgress, readProgress]);
 
   return (
     <div
       ref={glyphRef}
-      className="pointer-events-none absolute z-[2] aspect-square w-[20.25%] max-w-[5.0625rem] will-change-[left,top,transform] filter drop-shadow-[0_14px_20px_rgba(119,19,53,0.5)]"
+      className="roadmap-glyph pointer-events-none absolute z-[2] aspect-square w-[20.25%] max-w-[5.0625rem] will-change-[left,top,transform] filter drop-shadow-[0_14px_20px_rgba(119,19,53,0.5)]"
       style={{
         left: `${(98 / ROADMAP_VIEWBOX.width) * 100}%`,
         top: `${(64 / ROADMAP_VIEWBOX.height) * 100}%`,

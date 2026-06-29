@@ -2,6 +2,7 @@
 
 import { motion, useTransform, type MotionValue } from "framer-motion";
 import { ROADMAP_PATH, ROADMAP_TAIL, ROADMAP_VIEWBOX } from "./data";
+import { useIsMobile } from "./useIsMobile";
 
 const SILVER = "#babab9";
 const WINE = "#771335";
@@ -11,13 +12,15 @@ interface ModeloRoadmapPathProps {
 }
 
 export default function ModeloRoadmapPath({ progress }: ModeloRoadmapPathProps) {
+  const isMobile = useIsMobile();
   const pathLength = useTransform(progress, [0, 1], [0, 1]);
 
   return (
     <svg
-      className="pointer-events-none absolute inset-0 z-0 h-full w-full filter drop-shadow-[0_18px_22px_rgba(119,19,53,0.28)]"
+      className="roadmap-path pointer-events-none absolute inset-0 z-0 h-full w-full will-change-transform filter drop-shadow-[0_18px_22px_rgba(119,19,53,0.28)]"
       viewBox={`0 0 ${ROADMAP_VIEWBOX.width} ${ROADMAP_VIEWBOX.height}`}
       preserveAspectRatio="xMidYMid meet"
+      shapeRendering={isMobile ? "optimizeSpeed" : "auto"}
       aria-hidden="true"
     >
       <defs>
@@ -30,16 +33,18 @@ export default function ModeloRoadmapPath({ progress }: ModeloRoadmapPathProps) 
         >
           <feDropShadow
             dx="0"
-            dy="14"
-            stdDeviation="10"
+            dy={isMobile ? 10 : 14}
+            stdDeviation={isMobile ? 6 : 10}
             floodColor="rgba(119, 19, 53, 0.45)"
           />
-          <feDropShadow
-            dx="0"
-            dy="4"
-            stdDeviation="3"
-            floodColor="rgba(27, 106, 133, 0.2)"
-          />
+          {!isMobile && (
+            <feDropShadow
+              dx="0"
+              dy="4"
+              stdDeviation="3"
+              floodColor="rgba(27, 106, 133, 0.2)"
+            />
+          )}
         </filter>
       </defs>
       <path
@@ -61,6 +66,7 @@ export default function ModeloRoadmapPath({ progress }: ModeloRoadmapPathProps) 
         filter="url(#roadmap-wine-glow)"
         style={{
           pathLength,
+          willChange: "stroke-dashoffset",
         }}
       />
       <path

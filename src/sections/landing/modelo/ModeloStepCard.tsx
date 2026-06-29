@@ -1,25 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { memo } from "react";
 import type { ModeloStep } from "./data";
 import { MOBILE_CARD_TOP, MOBILE_PATH_GUTTER, ROADMAP_VIEWBOX } from "./data";
 import { getStepDepthStyle } from "./roadmapDepth";
-import { useIsMobile } from "./useIsMobile";
+import {
+  getStepMotionStyle,
+  getStepMotionTransition,
+  ROADMAP_DEPTH_EASE,
+} from "./roadmapScrollState";
 
 interface ModeloStepCardProps {
   step: ModeloStep;
   visible: boolean;
   activeStepId: string | null;
+  isMobile: boolean;
 }
 
-export default function ModeloStepCard({
+function ModeloStepCard({
   step,
   visible,
   activeStepId,
+  isMobile,
 }: ModeloStepCardProps) {
-  const isMobile = useIsMobile();
   const isLeft = step.side === "left";
   const depth = getStepDepthStyle(step.id, activeStepId, visible);
+  const motionStyle = getStepMotionStyle(depth, visible, isMobile);
+  const transition = getStepMotionTransition(isMobile);
 
   const desktopTopPct = (step.node.y / ROADMAP_VIEWBOX.height) * 100;
   const topPct = isMobile ? MOBILE_CARD_TOP[step.id] : desktopTopPct;
@@ -49,27 +56,21 @@ export default function ModeloStepCard({
         };
 
   return (
-    <motion.article
-      className={`absolute isolate z-10 max-md:z-[8] max-md:translate-y-0 md:max-w-[21rem] md:-translate-y-1/2 will-change-[transform,opacity,filter] ${
+    <article
+      className={`roadmap-step-card absolute isolate z-10 max-md:z-[8] max-md:translate-y-0 will-change-transform md:max-w-[21rem] ${
         isMobile || !isLeft ? "text-left" : "text-right"
       }`}
-      initial={false}
-      animate={{
-        opacity: visible ? depth.opacity : 0,
-        scale: visible ? depth.scale : 0.95,
-        filter: visible ? `blur(${depth.blurPx}px)` : "blur(1px)",
-        y: visible ? 0 : isMobile ? 10 : 16,
-      }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       style={{
         top: `${topPct}%`,
         ...positionStyle,
+        ...motionStyle,
         pointerEvents: visible ? "auto" : "none",
+        transition: `opacity ${transition.duration}s ${ROADMAP_DEPTH_EASE}, transform ${transition.duration}s ${ROADMAP_DEPTH_EASE}, filter ${transition.duration}s ${ROADMAP_DEPTH_EASE}`,
       }}
     >
       {isMobile && (
         <div
-          className="pointer-events-none absolute -inset-x-2 -inset-y-1.5 z-0 rounded-xl border border-xamani-navy-light/20 bg-xamani-navy-deep/75 backdrop-blur-[8px]"
+          className="roadmap-card-glass pointer-events-none absolute -inset-x-2 -inset-y-1.5 z-0 rounded-xl border border-xamani-navy-light/20 bg-xamani-navy-deep/75 backdrop-blur-[6px]"
           aria-hidden="true"
         />
       )}
@@ -84,6 +85,8 @@ export default function ModeloStepCard({
           {step.description}
         </p>
       </div>
-    </motion.article>
+    </article>
   );
 }
+
+export default memo(ModeloStepCard);
