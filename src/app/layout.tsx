@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -43,6 +43,13 @@ export const metadata: Metadata = {
   title: "XAMANI — Asesores con Propósito",
   description:
     "Elegimos construir lo que trasciende. Asesoría estratégica con propósito.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0b1520",
 };
 
 export default function RootLayout({

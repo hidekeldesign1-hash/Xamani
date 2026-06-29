@@ -21,34 +21,10 @@ export interface HeroMenuItem {
 export const HERO_MENU_ITEMS: HeroMenuItem[] = [
   {
     id: "manifiesto",
-    label: "El Manifiesto",
+    label: "Manifiesto",
     subtitle: "Nuestros principios, nuestra causa.",
     href: ROUTES.manifiesto,
     icon: "column",
-    accent: "cyan",
-  },
-  {
-    id: "modelo",
-    label: "Modelo de Negocio",
-    subtitle: "Cómo generamos valor.",
-    href: ROUTES.modelo,
-    icon: "chart",
-    accent: "none",
-  },
-  {
-    id: "equipo",
-    label: "Unirme al Equipo",
-    subtitle: "Sé parte de algo grande.",
-    href: ROUTES.equipo,
-    icon: "team",
-    accent: "wine",
-  },
-  {
-    id: "asesoria",
-    label: "Agenda una Asesoría",
-    subtitle: "Hablemos de tu visión.",
-    href: ROUTES.asesoria,
-    icon: "calendar",
     accent: "cyan",
   },
   {
@@ -58,6 +34,30 @@ export const HERO_MENU_ITEMS: HeroMenuItem[] = [
     href: ROUTES.historia,
     icon: "compass",
     accent: "none",
+  },
+  {
+    id: "equipo",
+    label: "Conviertete en Xamani",
+    subtitle: "Sé parte de algo grande.",
+    href: ROUTES.equipo,
+    icon: "team",
+    accent: "wine",
+  },
+  {
+    id: "modelo",
+    label: "El Camino Xamani",
+    subtitle: "Cómo generamos valor.",
+    href: ROUTES.modelo,
+    icon: "chart",
+    accent: "none",
+  },
+  {
+    id: "asesoria",
+    label: "Agenda una Asesoría",
+    subtitle: "Hablemos de tu visión.",
+    href: ROUTES.asesoria,
+    icon: "calendar",
+    accent: "cyan",
   },
 ];
 

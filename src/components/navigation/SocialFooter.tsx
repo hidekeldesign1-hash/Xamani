@@ -1,10 +1,11 @@
 "use client";
 
 import { SocialIcon, type SocialIconName } from "@/components/icons/SocialIcons";
+import { WHATSAPP_JOIN_URL } from "@/data/contact";
 
 const SOCIAL_LINKS: { label: string; href: string; icon: SocialIconName }[] = [
   { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
-  { label: "WhatsApp", href: "https://wa.me", icon: "whatsapp" },
+  { label: "WhatsApp", href: WHATSAPP_JOIN_URL, icon: "whatsapp" },
   { label: "TikTok", href: "https://tiktok.com", icon: "tiktok" },
   { label: "LinkedIn", href: "https://linkedin.com", icon: "linkedin" },
 ];
@@ -35,9 +36,9 @@ export default function SocialFooter({
           )}
           <a
             href={link.href}
-            target="_blank"
+            target={link.href.includes("wa.me") ? undefined : "_blank"}
             rel="noopener noreferrer"
-            className="group flex items-center gap-2.5 opacity-70 transition-all duration-300 hover:opacity-100"
+            className="group flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center gap-2.5 opacity-70 transition-all duration-300 [-webkit-tap-highlight-color:transparent] hover:opacity-100"
             aria-label={link.label}
           >
             <SocialIcon

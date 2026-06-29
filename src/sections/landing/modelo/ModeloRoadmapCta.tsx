@@ -12,7 +12,7 @@ interface ModeloRoadmapCtaProps {
 export default function ModeloRoadmapCta({ visible }: ModeloRoadmapCtaProps) {
   return (
     <motion.div
-      className="absolute inset-0 z-30 flex items-center justify-center px-6"
+      className="absolute inset-0 z-30 flex items-center justify-center overflow-hidden px-6"
       initial={false}
       animate={{ opacity: visible ? 1 : 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -20,7 +20,7 @@ export default function ModeloRoadmapCta({ visible }: ModeloRoadmapCtaProps) {
       aria-hidden={!visible}
     >
       <motion.div
-        className="absolute inset-0 bg-xamani-canvas/80 backdrop-blur-[14px]"
+        className="cta-backdrop-blur absolute -inset-3 sm:-inset-4"
         initial={false}
         animate={{ opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
@@ -28,7 +28,7 @@ export default function ModeloRoadmapCta({ visible }: ModeloRoadmapCtaProps) {
       />
 
       <motion.aside
-        className="relative z-10 mx-auto w-full max-w-md text-center"
+        className="relative z-10 mx-auto w-full max-w-xl text-center"
         initial={false}
         animate={{
           opacity: visible ? 1 : 0,
@@ -36,17 +36,14 @@ export default function ModeloRoadmapCta({ visible }: ModeloRoadmapCtaProps) {
           scale: visible ? 1 : 0.97,
         }}
         transition={{ duration: 0.5, delay: visible ? 0.08 : 0, ease: [0.22, 1, 0.36, 1] }}
-        aria-label="Acciones del modelo de negocio"
+        aria-label="Acciones de El Camino Xamani"
       >
-        <p className="mb-8 font-archia text-sm leading-relaxed text-xamani-silver/90 sm:text-base sm:leading-[1.75]">
+        <p className="mb-10 font-archia text-lg leading-relaxed text-xamani-silver/90 sm:text-xl sm:leading-[1.65] md:text-2xl md:leading-[1.55]">
           {MODELO_CTA_COPY}
         </p>
-        <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <PillLink href={ROUTES.equipo} filled={false} className="min-w-[14rem] justify-center">
-            Conoce al equipo
-          </PillLink>
-          <PillLink href={ROUTES.asesoria} className="min-w-[14rem] justify-center">
-            Agenda una asesoría
+        <div className="flex justify-center">
+          <PillLink href={ROUTES.equipo} className="min-w-[16rem] justify-center">
+            Conviertete en Xamani
           </PillLink>
         </div>
       </motion.aside>

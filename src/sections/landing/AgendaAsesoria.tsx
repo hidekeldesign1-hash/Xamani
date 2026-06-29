@@ -1,7 +1,7 @@
 import TestimonialCard from "@/components/cards/TestimonialCard";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/Reveal";
-import PillLink from "@/components/ui/PillLink";
 import MediaPlaceholder from "@/sections/landing/shared/MediaPlaceholder";
+import AgendaWhatsAppForm from "./AgendaWhatsAppForm";
 
 const TESTIMONIALS = [
   {
@@ -58,20 +58,7 @@ export default function AgendaAsesoria() {
                 tus objetivos y diseñemos juntos el primer paso hacia una asesoría
                 con propósito.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <label htmlFor="contact-email" className="sr-only">
-                  Correo electrónico
-                </label>
-                <input
-                  id="contact-email"
-                  type="email"
-                  placeholder="tu@empresa.com"
-                  className="min-w-0 flex-1 rounded-pill border border-white/15 bg-white/5 px-5 py-3.5 font-archia text-sm text-xamani-silver placeholder:text-xamani-silver-muted/50 focus:border-xamani-cyan/50 focus:outline-none focus:ring-1 focus:ring-xamani-cyan/30"
-                />
-                <PillLink href="mailto:HOLA@XAMANI.COM.MX" className="shrink-0 justify-center">
-                  Agendar ahora
-                </PillLink>
-              </div>
+              <AgendaWhatsAppForm />
             </div>
             <MediaPlaceholder
               aspect="landscape"

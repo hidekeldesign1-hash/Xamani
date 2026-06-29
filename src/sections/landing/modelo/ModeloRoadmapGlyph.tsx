@@ -6,7 +6,7 @@ import { ROADMAP_VIEWBOX } from "./data";
 import { getRoadmapPointAtProgress } from "./roadmapPathMath";
 
 const WINE = "#771335";
-const GLYPH_SRC = "/images/geroglifico-mapa.png";
+const ISOTIPO_SRC = "/images/isotipo.png";
 
 interface ModeloRoadmapGlyphProps {
   progress: MotionValue<number>;
@@ -34,13 +34,13 @@ export default function ModeloRoadmapGlyph({
       const glyph = glyphRef.current;
       if (!glyph) return;
 
-      const { x, y, angle } = getRoadmapPointAtProgress(value);
+      const { x, y } = getRoadmapPointAtProgress(value);
       const left = (x / ROADMAP_VIEWBOX.width) * 100;
       const top = (y / ROADMAP_VIEWBOX.height) * 100;
 
       glyph.style.left = `${left}%`;
       glyph.style.top = `${top}%`;
-      glyph.style.transform = `translate3d(-50%, -50%, 0) rotate(${angle}deg)`;
+      glyph.style.transform = "translate3d(-50%, -50%, 0)";
       glyph.style.opacity = value <= 0.002 ? "0.85" : "1";
     },
     []
@@ -115,7 +115,7 @@ export default function ModeloRoadmapGlyph({
   return (
     <div
       ref={glyphRef}
-      className="pointer-events-none absolute z-[2] aspect-square w-[10.5%] max-w-[2.65rem] will-change-[left,top,transform]"
+      className="pointer-events-none absolute z-[2] aspect-square w-[20.25%] max-w-[5.0625rem] will-change-[left,top,transform] filter drop-shadow-[0_14px_20px_rgba(119,19,53,0.5)]"
       style={{
         left: `${(98 / ROADMAP_VIEWBOX.width) * 100}%`,
         top: `${(64 / ROADMAP_VIEWBOX.height) * 100}%`,
@@ -126,14 +126,15 @@ export default function ModeloRoadmapGlyph({
         className="h-full w-full"
         style={{
           backgroundColor: WINE,
-          WebkitMaskImage: `url(${GLYPH_SRC})`,
-          maskImage: `url(${GLYPH_SRC})`,
+          WebkitMaskImage: `url(${ISOTIPO_SRC})`,
+          maskImage: `url(${ISOTIPO_SRC})`,
           WebkitMaskSize: "contain",
           maskSize: "contain",
           WebkitMaskRepeat: "no-repeat",
           maskRepeat: "no-repeat",
           WebkitMaskPosition: "center",
           maskPosition: "center",
+          filter: "drop-shadow(0 0 6px rgba(119, 19, 53, 0.55))",
         }}
         aria-hidden="true"
       />

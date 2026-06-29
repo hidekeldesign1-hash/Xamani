@@ -7,6 +7,7 @@ import HeroNeonCanvas from "@/components/hero/HeroNeonCanvas";
 import SiteFooter from "@/components/layout/SiteFooter";
 import ScrollIndicator from "@/components/navigation/ScrollIndicator";
 import PillLink from "@/components/ui/PillLink";
+import { WHATSAPP_JOIN_URL } from "@/data/contact";
 import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
 import { useIsMobile } from "@/sections/landing/modelo/useIsMobile";
 
@@ -14,8 +15,6 @@ const WINE = "#771335";
 const SILVER = "#babab9";
 const SCROLL_VH = 360;
 const MOBILE_SCROLL_VH = 300;
-const PERFIL_MAILTO =
-  "mailto:HOLA@XAMANI.COM.MX?subject=Enviar%20mi%20perfil";
 
 type BlockMotion = { opacity: number; y: number };
 
@@ -111,7 +110,7 @@ function ManifiestoClosing({
         className="will-change-[transform,opacity]"
         style={{ opacity: 0, transform: "translate3d(0, 18px, 0)", pointerEvents: "none" }}
       >
-        <PillLink href={PERFIL_MAILTO} className="mt-2 sm:mt-4">
+        <PillLink href={WHATSAPP_JOIN_URL} className="mt-2 sm:mt-4">
           Enviar mi perfil
         </PillLink>
       </div>
@@ -147,7 +146,7 @@ function StaticManifiesto() {
   return (
     <section
       id="manifiesto"
-      aria-label="El Manifiesto"
+      aria-label="Manifiesto"
       className="relative overflow-hidden bg-[#0b1520] px-6 py-24 md:px-12"
     >
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -215,7 +214,7 @@ function StaticManifiesto() {
           <p className="font-ambit text-[clamp(1.75rem,5vw,3rem)] font-normal text-xamani-silver">
             Conviértete en <span className="font-bold text-white">XAMANI</span>
           </p>
-          <PillLink href={PERFIL_MAILTO} className="mt-2 sm:mt-4">
+          <PillLink href={WHATSAPP_JOIN_URL} className="mt-2 sm:mt-4">
             Enviar mi perfil
           </PillLink>
         </div>
@@ -348,7 +347,7 @@ export default function ElManifiesto() {
 
       <section
         ref={overlayRef}
-        aria-label="El Manifiesto"
+        aria-label="Manifiesto"
         className="fixed inset-0 z-[8] flex items-center justify-center"
         style={{ opacity: 1 }}
       >

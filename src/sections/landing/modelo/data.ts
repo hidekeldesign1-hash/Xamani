@@ -89,10 +89,13 @@ export const MODELO_STEPS: ModeloStep[] = [
   },
 ];
 
+/** Desktop: CTA tras leer el paso 05 — isotipo cerca del nodo final. */
+export const DESKTOP_CTA_THRESHOLD = 0.97;
+/** Legacy alias — móvil usa scroll raw, no este valor. */
 export const CTA_THRESHOLD = 0.9;
 
 export const MODELO_CTA_COPY =
-  "Un modelo integral que combina análisis profundo, ejecución disciplinada y acompañamiento humano para generar impacto real.";
+  "Nosotros te decimos como, tu decides cuando";
 
 export const ROADMAP_ASPECT_RATIO = `${ROADMAP_VIEWBOX.width} / ${ROADMAP_VIEWBOX.height}`;
 

@@ -7,7 +7,7 @@ export default function ModeloNegocio() {
   return (
     <section
       id="modelo-negocio"
-      aria-label="Modelo de Negocio"
+      aria-label="El Camino Xamani"
       className="relative w-full bg-xamani-canvas"
     >
       <ModeloRoadmapExperience />

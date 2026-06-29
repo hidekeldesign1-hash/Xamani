@@ -1,8 +1,8 @@
 import ExpertCard from "@/components/cards/ExpertCard";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/Reveal";
 import PillLink from "@/components/ui/PillLink";
+import { WHATSAPP_JOIN_URL } from "@/data/contact";
 import SectionHeading from "@/sections/landing/shared/SectionHeading";
-import { ROUTES } from "@/data/heroMenu";
 
 const TEAM = [
   {
@@ -35,13 +35,23 @@ const TEAM = [
     role: "Mentor Ejecutivo",
     bio: "Acompaña a directivos en decisiones críticas con metodología y empatía.",
   },
+  {
+    name: "Sofía Nájera",
+    role: "Directora de Talento",
+    bio: "Identifica y desarrolla líderes que encarnan la cultura Xamani en cada proyecto.",
+  },
+  {
+    name: "Fernando Ortega",
+    role: "Consultor Legal y Compliance",
+    bio: "Asegura solidez regulatoria y gobernanza en estrategias de crecimiento.",
+  },
 ];
 
 export default function UnirmeEquipo() {
   return (
     <section
       id="unirme-equipo"
-      aria-label="Unirme al Equipo"
+      aria-label="Conviertete en Xamani"
       className="relative w-full bg-xamani-canvas"
     >
       <div className="section-padding mx-auto max-w-7xl">
@@ -49,7 +59,7 @@ export default function UnirmeEquipo() {
           <div className="mb-12 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
             <SectionHeading before="Conoce a nuestros " highlight="Expertos" />
             <PillLink
-              href="mailto:HOLA@XAMANI.COM.MX?subject=Unirme al equipo"
+              href={WHATSAPP_JOIN_URL}
               className="shrink-0 self-start sm:self-auto"
             >
               Únete al equipo →
@@ -58,7 +68,7 @@ export default function UnirmeEquipo() {
         </Reveal>
 
         <RevealStagger
-          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
           stagger={0.08}
         >
           {TEAM.map((member) => (
@@ -79,7 +89,7 @@ export default function UnirmeEquipo() {
               tienes experiencia en consultoría, estrategia o liderazgo, queremos
               conocerte.
             </p>
-            <PillLink href="mailto:HOLA@XAMANI.COM.MX?subject=Unirme al equipo">
+            <PillLink href={WHATSAPP_JOIN_URL}>
               Enviar mi perfil
             </PillLink>
           </div>

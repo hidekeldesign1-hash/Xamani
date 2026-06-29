@@ -3,16 +3,23 @@
 import { motion } from "framer-motion";
 import type { ModeloStep } from "./data";
 import { MOBILE_CARD_TOP, MOBILE_PATH_GUTTER, ROADMAP_VIEWBOX } from "./data";
+import { getStepDepthStyle } from "./roadmapDepth";
 import { useIsMobile } from "./useIsMobile";
 
 interface ModeloStepCardProps {
   step: ModeloStep;
   visible: boolean;
+  activeStepId: string | null;
 }
 
-export default function ModeloStepCard({ step, visible }: ModeloStepCardProps) {
+export default function ModeloStepCard({
+  step,
+  visible,
+  activeStepId,
+}: ModeloStepCardProps) {
   const isMobile = useIsMobile();
   const isLeft = step.side === "left";
+  const depth = getStepDepthStyle(step.id, activeStepId, visible);
 
   const desktopTopPct = (step.node.y / ROADMAP_VIEWBOX.height) * 100;
   const topPct = isMobile ? MOBILE_CARD_TOP[step.id] : desktopTopPct;
@@ -43,15 +50,17 @@ export default function ModeloStepCard({ step, visible }: ModeloStepCardProps) {
 
   return (
     <motion.article
-      className={`absolute isolate z-10 max-md:z-[8] max-md:translate-y-0 md:max-w-[21rem] md:-translate-y-1/2 ${
+      className={`absolute isolate z-10 max-md:z-[8] max-md:translate-y-0 md:max-w-[21rem] md:-translate-y-1/2 will-change-[transform,opacity,filter] ${
         isMobile || !isLeft ? "text-left" : "text-right"
       }`}
       initial={false}
       animate={{
-        opacity: visible ? 1 : 0,
+        opacity: visible ? depth.opacity : 0,
+        scale: visible ? depth.scale : 0.95,
+        filter: visible ? `blur(${depth.blurPx}px)` : "blur(1px)",
         y: visible ? 0 : isMobile ? 10 : 16,
       }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       style={{
         top: `${topPct}%`,
         ...positionStyle,

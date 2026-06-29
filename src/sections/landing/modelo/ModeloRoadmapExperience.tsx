@@ -12,7 +12,7 @@ import PillLink from "@/components/ui/PillLink";
 import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
 import { ROUTES } from "@/data/heroMenu";
 import {
-  CTA_THRESHOLD,
+  DESKTOP_CTA_THRESHOLD,
   MODELO_CTA_COPY,
   MODELO_STEPS,
 } from "./data";
@@ -77,18 +77,13 @@ function StaticRoadmap() {
           </li>
         ))}
       </ol>
-      <aside className="mt-14 max-w-sm">
-        <p className="mb-5 font-archia text-sm leading-relaxed text-xamani-silver-muted">
+      <aside className="mt-14 max-w-xl">
+        <p className="mb-8 font-archia text-lg leading-relaxed text-xamani-silver-muted sm:text-xl">
           {MODELO_CTA_COPY}
         </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <PillLink href={ROUTES.equipo} filled={false} className="justify-center">
-            Conoce al equipo
-          </PillLink>
-          <PillLink href={ROUTES.asesoria} className="justify-center">
-            Agenda una asesoría
-          </PillLink>
-        </div>
+        <PillLink href={ROUTES.equipo} className="min-w-[16rem] justify-center">
+          Conviertete en Xamani
+        </PillLink>
       </aside>
     </div>
   );
@@ -103,6 +98,7 @@ export default function ModeloRoadmapExperience() {
   const [ctaRevealed, setCtaRevealed] = useState(false);
   const [showScrollHint, setShowScrollHint] = useState(true);
   const [activeTitle, setActiveTitle] = useState("Inicio");
+  const [activeStepId, setActiveStepId] = useState<string | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -129,22 +125,22 @@ export default function ModeloRoadmapExperience() {
 
       const showCta = isMobile
         ? raw >= scrollSegments.ctaRawStart
-        : anim >= CTA_THRESHOLD;
+        : anim >= DESKTOP_CTA_THRESHOLD;
 
       if (showCta) {
         setCtaRevealed(true);
       } else if (
         isMobile
           ? raw < scrollSegments.ctaRawStart - REVEAL_BACK_BUFFER
-          : anim < CTA_THRESHOLD - REVEAL_BACK_BUFFER
+          : anim < DESKTOP_CTA_THRESHOLD - REVEAL_BACK_BUFFER
       ) {
         setCtaRevealed(false);
       }
 
-      const active =
-        MODELO_STEPS.filter((s) => anim >= s.threshold).slice(-1)[0]?.title ??
-        "Inicio";
-      setActiveTitle(active);
+      const activeStep =
+        MODELO_STEPS.filter((s) => anim >= s.threshold).slice(-1)[0] ?? null;
+      setActiveTitle(activeStep?.title ?? "Inicio");
+      setActiveStepId(activeStep?.id ?? null);
 
       const hintFadeEnd = scrollSegments.leadRatio + scrollSegments.animSpan * 0.1;
       setShowScrollHint(!showCta && raw < hintFadeEnd);
@@ -172,44 +168,55 @@ export default function ModeloRoadmapExperience() {
   return (
     <section
       ref={sectionRef}
-      aria-label="Ruta del modelo de negocio"
+      aria-label="Ruta de El Camino Xamani"
       className="relative -mt-20 w-full max-md:-mt-24 md:-mt-24"
       style={{ height: `${scrollSegments.totalVh}vh` }}
     >
-      <div className="sticky top-0 relative flex h-[calc(100dvh-6.25rem-env(safe-area-inset-bottom))] min-h-[480px] overflow-hidden max-md:top-0 md:top-[max(5.75rem,calc(4.75rem+env(safe-area-inset-top)))] md:h-[calc(100dvh-max(5.75rem,calc(4.75rem+env(safe-area-inset-top))))] md:min-h-[520px]"
+      <div className="roadmap-sticky-viewport sticky top-0 relative flex min-h-[480px] overflow-hidden max-md:top-0 md:min-h-[520px]"
       >
-        <div className="relative mx-auto flex h-full w-full max-w-5xl flex-col justify-center px-3 max-md:justify-start max-md:pt-5 max-md:pb-5 sm:px-6 md:px-6 md:pb-6 md:pt-10">
-          <div className="relative min-h-0 w-full flex-1 max-md:translate-y-5">
-            {/* Capa 1 — líneas y nodos del mapa */}
-            <ModeloRoadmapCanvas>
-              <ModeloRoadmapPath progress={animProgress} />
-              <ModeloRoadmapGlyph
-                progress={animProgress}
-                scrollYProgress={scrollYProgress}
-                resolveProgress={(raw) => toAnimProgress(raw, scrollSegments)}
-              />
+        <motion.div
+          className="relative mx-auto flex h-full w-full max-w-5xl flex-col justify-center px-3 max-md:justify-start max-md:pt-5 max-md:pb-5 sm:px-6 md:px-6 md:pb-6 md:pt-10"
+          initial={false}
+          animate={{
+            opacity: ctaRevealed ? 0.2 : 1,
+            filter: ctaRevealed && !prefersReducedMotion ? "blur(6px)" : "blur(0px)",
+          }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{ pointerEvents: ctaRevealed ? "none" : "auto" }}
+        >
+          <div className="relative min-h-0 w-full flex-1 max-md:translate-y-5 [perspective:1200px]">
+            <div className="relative h-full w-full origin-center [transform-style:preserve-3d] [transform:rotateX(15deg)] [backface-visibility:hidden]">
+              <ModeloRoadmapCanvas>
+                <ModeloRoadmapPath progress={animProgress} />
+                <ModeloRoadmapGlyph
+                  progress={animProgress}
+                  scrollYProgress={scrollYProgress}
+                  resolveProgress={(raw) => toAnimProgress(raw, scrollSegments)}
+                />
+                {MODELO_STEPS.map((step) => (
+                  <ModeloStepNode
+                    key={step.id}
+                    step={step}
+                    visible={revealedIds.has(step.id)}
+                    activeStepId={activeStepId}
+                  />
+                ))}
+              </ModeloRoadmapCanvas>
+
               {MODELO_STEPS.map((step) => (
-                <ModeloStepNode
+                <ModeloStepCard
                   key={step.id}
                   step={step}
                   visible={revealedIds.has(step.id)}
+                  activeStepId={activeStepId}
                 />
               ))}
-            </ModeloRoadmapCanvas>
-
-            {/* Capa 2 y 3 — tarjeta difuminada + texto */}
-            {MODELO_STEPS.map((step) => (
-              <ModeloStepCard
-                key={step.id}
-                step={step}
-                visible={revealedIds.has(step.id)}
-              />
-            ))}
-
-            {/* CTA con difuminado sobre el mapa */}
-            <ModeloRoadmapCta visible={ctaRevealed} />
+            </div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* CTA a nivel del viewport sticky — blur cubre toda el área visible */}
+        <ModeloRoadmapCta visible={ctaRevealed} />
 
         <motion.div
           className="pointer-events-none absolute inset-x-0 bottom-1 z-20 flex justify-center md:bottom-3"

@@ -3,25 +3,36 @@
 import { motion } from "framer-motion";
 import type { ModeloStep } from "./data";
 import { ROADMAP_VIEWBOX } from "./data";
+import { getStepDepthStyle } from "./roadmapDepth";
 
 interface ModeloStepNodeProps {
   step: ModeloStep;
   visible: boolean;
+  activeStepId: string | null;
 }
 
-export default function ModeloStepNode({ step, visible }: ModeloStepNodeProps) {
+export default function ModeloStepNode({
+  step,
+  visible,
+  activeStepId,
+}: ModeloStepNodeProps) {
   const leftPct = (step.node.x / ROADMAP_VIEWBOX.width) * 100;
   const topPct = (step.node.y / ROADMAP_VIEWBOX.height) * 100;
+  const depth = getStepDepthStyle(step.id, activeStepId, visible);
+  const isFocused = visible && step.id === activeStepId;
 
   return (
     <motion.div
-      className="pointer-events-none absolute z-[1]"
+      className="pointer-events-none absolute z-[1] will-change-[transform,opacity,filter]"
       initial={false}
       animate={{
-        opacity: visible ? 1 : 0,
-        scale: visible ? 1.2 : 0.75,
+        opacity: visible ? depth.opacity : 0,
+        scale: visible ? (isFocused ? 1.25 : depth.scale * 1.05) : 0.75,
+        filter: visible
+          ? `blur(${depth.blurPx}px) drop-shadow(0 10px 16px rgba(119, 19, 53, 0.4))`
+          : "blur(1px)",
       }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       style={{
         left: `${leftPct}%`,
         top: `${topPct}%`,
