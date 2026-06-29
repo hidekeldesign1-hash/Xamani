@@ -35,6 +35,9 @@ export const AGENTES_DATA: Agente[] = [
       "Cumplir metas y consolidar sueños mediante estrategias financieras de ahorro, retiro, inversión y protección. Miembro de la MDRT con más de 12 años de experiencia en el sector.",
     instagram: "@contigoytusfinanzas",
     whatsapp: "5522507952",
+    foto: "/agentes/diego-cardenas.png",
+    fotoAjuste: "object-cover object-[center_32%]",
+    fotoAjusteCirculo: "object-cover object-[center_28%] scale-110",
   },
   {
     nombre: "Dolores Sánchez Olivas",
