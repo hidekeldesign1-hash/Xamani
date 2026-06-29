@@ -75,4 +75,11 @@ function ModeloStepNode({
   );
 }
 
-export default memo(ModeloStepNode);
+export default memo(ModeloStepNode, (prev, next) => {
+  return (
+    prev.visible === next.visible &&
+    prev.activeStepId === next.activeStepId &&
+    prev.isMobile === next.isMobile &&
+    prev.step.id === next.step.id
+  );
+});

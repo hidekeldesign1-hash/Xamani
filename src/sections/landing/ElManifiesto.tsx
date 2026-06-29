@@ -92,6 +92,9 @@ function applyBlockMotion(el: HTMLElement, motion: BlockMotion) {
   el.style.pointerEvents = motion.opacity > 0.05 ? "auto" : "none";
 }
 
+const MANIFIESTO_CTA_BUTTON_CLASS =
+  "normal-case !px-7 !py-3.5 font-ambit !text-[clamp(1.15rem,2.8vw,2rem)] !leading-snug !tracking-normal hover:shadow-glow-wine sm:!px-9 sm:!py-4 md:!px-10 md:!py-4 lg:!px-12 lg:!py-5";
+
 function ManifiestoClosing({
   ctaRef,
 }: {
@@ -102,16 +105,16 @@ function ManifiestoClosing({
       <div className="h-11 w-11 text-xamani-silver/35 sm:h-12 sm:w-12">
         <Isotipo className="h-full w-full" />
       </div>
-      <p className="font-ambit text-[clamp(1.75rem,5vw,3rem)] font-normal text-xamani-silver">
-        Conviértete en <span className="font-bold text-white">XAMANI</span>
-      </p>
       <div
         ref={ctaRef}
         className="will-change-[transform,opacity]"
         style={{ opacity: 0, transform: "translate3d(0, 18px, 0)", pointerEvents: "none" }}
       >
-        <PillLink href={WHATSAPP_JOIN_URL} className="mt-2 sm:mt-4">
-          Enviar mi perfil
+        <PillLink
+          href={WHATSAPP_JOIN_URL}
+          className={MANIFIESTO_CTA_BUTTON_CLASS}
+        >
+          Conviértete en <span className="font-bold text-white">XAMANI</span>
         </PillLink>
       </div>
     </div>
@@ -211,11 +214,11 @@ function StaticManifiesto() {
           <div className="h-11 w-11 text-xamani-silver/35 sm:h-12 sm:w-12">
             <Isotipo className="h-full w-full" />
           </div>
-          <p className="font-ambit text-[clamp(1.75rem,5vw,3rem)] font-normal text-xamani-silver">
+          <PillLink
+            href={WHATSAPP_JOIN_URL}
+            className={MANIFIESTO_CTA_BUTTON_CLASS}
+          >
             Conviértete en <span className="font-bold text-white">XAMANI</span>
-          </p>
-          <PillLink href={WHATSAPP_JOIN_URL} className="mt-2 sm:mt-4">
-            Enviar mi perfil
           </PillLink>
         </div>
       </div>

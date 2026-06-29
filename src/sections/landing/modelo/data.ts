@@ -40,9 +40,9 @@ export const MODELO_STEPS: ModeloStep[] = [
   {
     id: "01",
     number: "01",
-    title: "Diagnóstico estratégico",
+    title: "La Llamada",
     description:
-      "Mapeamos contexto, riesgos y oportunidades para definir un rumbo claro y accionable.",
+      "Todo gran cambio empieza con una llamada interna: la sensación de que estás hecho para algo más.",
     node: { x: 98, y: 64 },
     side: "left",
     threshold: 0.1,
@@ -50,9 +50,9 @@ export const MODELO_STEPS: ModeloStep[] = [
   {
     id: "02",
     number: "02",
-    title: "Arquitectura de valor",
+    title: "La Iniciación",
     description:
-      "Diseñamos modelos de negocio, procesos y cultura alineados al propósito de la organización.",
+      "Te damos estructura, metodología y herramientas para construir bases sólidas desde el día 1.",
     node: { x: 298, y: 168 },
     side: "right",
     threshold: 0.28,
@@ -60,9 +60,9 @@ export const MODELO_STEPS: ModeloStep[] = [
   {
     id: "03",
     number: "03",
-    title: "Implementación guiada",
+    title: "La Travesía",
     description:
-      "Acompañamos la ejecución con metodologías probadas y seguimiento de indicadores clave.",
+      "Te acompañamos en cada reto hasta convertir la incertidumbre en confianza mediante coaching personalizado y acompañamiento estratégico.",
     node: { x: 72, y: 316 },
     side: "left",
     threshold: 0.48,
@@ -70,9 +70,9 @@ export const MODELO_STEPS: ModeloStep[] = [
   {
     id: "04",
     number: "04",
-    title: "Acompañamiento continuo",
+    title: "La Maestría",
     description:
-      "Sostenemos el crecimiento con revisiones periódicas, mentoría y ajustes estratégicos.",
+      "El conocimiento eleva tu valor y expande tu potencial.",
     node: { x: 302, y: 464 },
     side: "right",
     threshold: 0.68,
@@ -80,9 +80,9 @@ export const MODELO_STEPS: ModeloStep[] = [
   {
     id: "05",
     number: "05",
-    title: "Evolución y trascendencia",
+    title: "El Legado",
     description:
-      "Maximizamos el impacto a largo plazo asegurando la permanencia y el valor de la marca en el tiempo.",
+      "Construyes una empresa, una marca y una vida con propósito.",
     node: { x: 66, y: 612 },
     side: "left",
     threshold: 0.86,
@@ -95,7 +95,7 @@ export const DESKTOP_CTA_THRESHOLD = 0.97;
 export const CTA_THRESHOLD = 0.9;
 
 export const MODELO_CTA_COPY =
-  "Nosotros te decimos como, tu decides cuando";
+  "Nosotros te decimos cómo, tú decides cuándo";
 
 export const ROADMAP_ASPECT_RATIO = `${ROADMAP_VIEWBOX.width} / ${ROADMAP_VIEWBOX.height}`;
 

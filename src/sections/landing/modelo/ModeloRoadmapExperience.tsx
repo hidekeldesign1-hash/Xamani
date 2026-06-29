@@ -6,7 +6,7 @@ import {
   useTransform,
   motion,
 } from "framer-motion";
-import { useCallback, useRef, useState, startTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ScrollIndicator from "@/components/navigation/ScrollIndicator";
 import PillLink from "@/components/ui/PillLink";
 import { useThrottledMotionValueEvent } from "@/hooks/useThrottledMotionValueEvent";
@@ -104,7 +104,10 @@ export default function ModeloRoadmapExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
   const isMobile = useIsMobile();
-  const scrollSegments = getScrollSegments(isMobile);
+  const scrollSegments = useMemo(
+    () => getScrollSegments(isMobile),
+    [isMobile]
+  );
   const [scrollState, setScrollState] =
     useState<RevealedScrollState>(INITIAL_SCROLL_STATE);
 
@@ -122,17 +125,15 @@ export default function ModeloRoadmapExperience() {
 
   const updateRevealed = useCallback(
     (anim: number, raw: number) => {
-      startTransition(() => {
-        setScrollState((prev) =>
-          computeRevealedScrollState(anim, raw, prev, {
-            isMobile,
-            ctaRawStart: scrollSegments.ctaRawStart,
-            leadRatio: scrollSegments.leadRatio,
-            animSpan: scrollSegments.animSpan,
-            revealBackBuffer: REVEAL_BACK_BUFFER,
-          })
-        );
-      });
+      setScrollState((prev) =>
+        computeRevealedScrollState(anim, raw, prev, {
+          isMobile,
+          ctaRawStart: scrollSegments.ctaRawStart,
+          leadRatio: scrollSegments.leadRatio,
+          animSpan: scrollSegments.animSpan,
+          revealBackBuffer: REVEAL_BACK_BUFFER,
+        })
+      );
     },
     [
       isMobile,
@@ -145,6 +146,11 @@ export default function ModeloRoadmapExperience() {
   useThrottledMotionValueEvent(scrollYProgress, (raw) => {
     updateRevealed(toAnimProgress(raw, scrollSegments), raw);
   });
+
+  useEffect(() => {
+    const raw = scrollYProgress.get();
+    updateRevealed(toAnimProgress(raw, scrollSegments), raw);
+  }, [scrollYProgress, isMobile, updateRevealed, scrollSegments]);
 
   const nudgeScroll = useCallback(() => {
     window.scrollBy({ top: window.innerHeight * 0.3, behavior: "smooth" });

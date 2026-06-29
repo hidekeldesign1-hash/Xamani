@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 const MOBILE_QUERY = "(max-width: 767px)";
 
@@ -18,6 +18,14 @@ function getServerSnapshot() {
   return false;
 }
 
+/** Evita hydration mismatch: en SSR y primer paint del cliente devuelve false. */
 export function useIsMobile() {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const matches = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return mounted ? matches : false;
 }

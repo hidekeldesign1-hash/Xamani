@@ -5,7 +5,7 @@ import Isotipo from "@/components/brand/Isotipo";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/Reveal";
 import SocialFooter from "@/components/navigation/SocialFooter";
 import PillLink from "@/components/ui/PillLink";
-import { WHATSAPP_ASESORIA_URL } from "@/data/contact";
+import { WHATSAPP_ASESORIA_URL, XAMANI_PHONE_DISPLAY, XAMANI_PHONE_TEL } from "@/data/contact";
 
 interface SiteFooterProps {
   className?: string;
@@ -25,6 +25,10 @@ export default function SiteFooter({ className = "" }: SiteFooterProps) {
             <Logo className="text-2xl tracking-[0.3em] text-xamani-silver sm:text-3xl" />
             <p className="mt-3 font-archia text-sm text-xamani-silver/85 sm:text-base">
               Asesores con Propósito
+            </p>
+            <p className="mt-3 max-w-lg font-ambit text-[0.62rem] font-medium uppercase leading-[1.75] tracking-[0.18em] text-xamani-silver sm:text-xs sm:tracking-[0.22em]">
+              Elegimos construir lo que{" "}
+              <span className="text-xamani-cyan">trasciende.</span>
             </p>
           </div>
         </Reveal>
@@ -49,10 +53,10 @@ export default function SiteFooter({ className = "" }: SiteFooterProps) {
                 </li>
                 <li>
                   <a
-                    href="tel:+525551406721"
+                    href={XAMANI_PHONE_TEL}
                     className="transition-colors hover:text-xamani-silver"
                   >
-                    55 5140 6721
+                    {XAMANI_PHONE_DISPLAY}
                   </a>
                 </li>
               </ul>
@@ -87,7 +91,10 @@ export default function SiteFooter({ className = "" }: SiteFooterProps) {
       <Reveal amount={0.5}>
         <div className="border-t border-black/20 bg-xamani-navy-deep px-6 py-4 sm:px-12">
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 sm:flex-row">
-            <p className="font-archia text-xs text-xamani-silver-muted">
+            <p
+              className="font-archia text-xs text-xamani-silver-muted"
+              suppressHydrationWarning
+            >
               © {new Date().getFullYear()} XAMANI. Todos los derechos reservados.
             </p>
             <PillLink

@@ -1,13 +1,13 @@
 "use client";
 
 import { SocialIcon, type SocialIconName } from "@/components/icons/SocialIcons";
-import { WHATSAPP_JOIN_URL } from "@/data/contact";
+import { WHATSAPP_JOIN_URL, XAMANI_SOCIAL_LINKS } from "@/data/contact";
 
 const SOCIAL_LINKS: { label: string; href: string; icon: SocialIconName }[] = [
-  { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
+  { label: "Instagram", href: XAMANI_SOCIAL_LINKS.instagram, icon: "instagram" },
   { label: "WhatsApp", href: WHATSAPP_JOIN_URL, icon: "whatsapp" },
-  { label: "TikTok", href: "https://tiktok.com", icon: "tiktok" },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: "linkedin" },
+  { label: "TikTok", href: XAMANI_SOCIAL_LINKS.tiktok, icon: "tiktok" },
+  { label: "LinkedIn", href: XAMANI_SOCIAL_LINKS.linkedin, icon: "linkedin" },
 ];
 
 type SocialFooterVariant = "labeled" | "icons";

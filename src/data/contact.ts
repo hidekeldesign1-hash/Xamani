@@ -1,8 +1,19 @@
-export const XAMANI_WHATSAPP_PHONE = "525551406721";
+export const XAMANI_WHATSAPP_PHONE = "525538988562";
+
+export const XAMANI_PHONE_DISPLAY = "55 3898 8562";
+
+export const XAMANI_PHONE_TEL = `tel:+${XAMANI_WHATSAPP_PHONE}`;
 
 export const WHATSAPP_JOIN_MESSAGE = "Quiero ser Xamani, dame mas información";
 
 export const WHATSAPP_ASESORIA_MESSAGE = "Busco una asesoria";
+
+export const XAMANI_SOCIAL_LINKS = {
+  instagram:
+    "https://www.instagram.com/xamanimx?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+  tiktok: "https://www.tiktok.com/@xamanimx?_r=1&_t=ZS-97Xhc9NETmK",
+  linkedin: "https://www.linkedin.com/company/holaxamani/",
+} as const;
 
 export const WHATSAPP_JOIN_URL = `https://wa.me/${XAMANI_WHATSAPP_PHONE}?text=${encodeURIComponent(
   WHATSAPP_JOIN_MESSAGE
