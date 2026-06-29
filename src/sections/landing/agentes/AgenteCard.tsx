@@ -2,6 +2,7 @@
 
 import { SocialIcon } from "@/components/icons/SocialIcons";
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import type { Agente } from "./data";
 import { buildAgentInstagramUrl, buildAgentWhatsAppUrl } from "./data";
 
@@ -29,6 +30,16 @@ export default function AgenteCard({
   const whatsappUrl = buildAgentWhatsAppUrl(agente.whatsapp);
   const instagramUrl = buildAgentInstagramUrl(agente.instagram);
   const hasSocialLinks = Boolean(whatsappUrl || instagramUrl || agente.web);
+  const circuloGrande = Boolean(agente.fotoCirculoClassName);
+  const contentPaddingIdle = circuloGrande
+    ? "px-5 pb-4 pt-[5.5rem] sm:px-6 sm:pb-5 sm:pt-[5.75rem]"
+    : "px-5 pb-4 pt-[4.75rem] sm:px-6 sm:pb-5 sm:pt-[5rem]";
+  const fotoFondo = agente.fotoFondo ?? "bg-xamani-navy-light/80";
+  const fotoBorde = agente.fotoSinBorde
+    ? "border-0"
+    : "border border-xamani-cyan/30";
+  const circuloIdleClass =
+    agente.fotoCirculoClassName ?? "h-12 w-12 sm:top-6 sm:left-6";
 
   return (
     <motion.article
@@ -50,21 +61,23 @@ export default function AgenteCard({
         className={
           isActive
             ? "relative z-0 flex min-h-0 flex-1 flex-col overflow-hidden p-5 sm:p-6"
-            : "relative z-0 flex min-h-0 flex-1 flex-col overflow-hidden px-5 pb-4 pt-[4.75rem] sm:px-6 sm:pb-5 sm:pt-[5rem]"
+            : `relative z-0 flex min-h-0 flex-1 flex-col overflow-hidden ${contentPaddingIdle}`
         }
       >
         <h3 className="font-ambit text-base leading-snug text-xamani-silver sm:text-lg">
           {agente.nombre}
         </h3>
-        <p className="mt-1 font-archia text-[0.65rem] uppercase tracking-[0.22em] text-xamani-cyan sm:text-xs">
-          {agente.marca}
-        </p>
+        {agente.marca.trim() && (
+          <p className="mt-1 font-archia text-[0.65rem] uppercase tracking-[0.22em] text-xamani-cyan sm:text-xs">
+            {agente.marca}
+          </p>
+        )}
 
         <p className="mt-2 line-clamp-2 font-archia text-xs italic leading-relaxed text-xamani-silver/90 sm:text-sm">
           {agente.lema}
         </p>
 
-        <div className="mt-2 min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-none">
+        <div className="mt-2 min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-none [touch-action:pan-y]">
           <p className="font-archia text-xs leading-relaxed text-xamani-silver-muted sm:text-sm">
             {agente.descripcion}
           </p>
@@ -75,15 +88,30 @@ export default function AgenteCard({
         layout
         aria-hidden
         transition={transition}
-        className={`agente-card-photo pointer-events-none absolute overflow-hidden border border-xamani-cyan/30 bg-xamani-navy-light/80 ${
+        className={`agente-card-photo pointer-events-none absolute overflow-hidden ${fotoFondo} ${fotoBorde} ${
           isActive ? "will-change-[transform,width,height]" : ""
         } ${
           isActive
             ? "inset-0 z-20 h-full w-full rounded-card"
-            : "top-5 left-5 z-10 h-12 w-12 rounded-full sm:top-6 sm:left-6"
+            : `top-5 left-5 z-10 rounded-full ${circuloIdleClass}`
         }`}
       >
-        {/* Al agregar agente.foto: <img src={...} alt="" className="h-full w-full object-cover" /> */}
+        {agente.foto && (
+          <Image
+            src={agente.foto}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 96px, 384px"
+            className={
+              isActive
+                ? (agente.fotoAjuste ?? "object-cover object-center")
+                : (agente.fotoAjusteCirculo ??
+                  agente.fotoAjuste ??
+                  "object-cover object-center")
+            }
+            draggable={false}
+          />
+        )}
       </motion.div>
 
       {hasSocialLinks && (

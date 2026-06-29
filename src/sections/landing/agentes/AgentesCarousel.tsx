@@ -7,6 +7,7 @@ import {
   type PanInfo,
 } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useIsMobile } from "@/sections/landing/modelo/useIsMobile";
 import AgenteCard from "./AgenteCard";
 import { AGENTES_DATA } from "./data";
 
@@ -21,20 +22,25 @@ function CarouselNavButton({
   onClick: () => void;
   disabled: boolean;
 }) {
+  const isPrev = direction === "prev";
+
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={direction === "prev" ? "Agente anterior" : "Siguiente agente"}
-      className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-xamani-navy/40 text-lg text-xamani-silver backdrop-blur-sm transition-colors enabled:hover:border-xamani-cyan/40 enabled:hover:text-xamani-cyan disabled:opacity-30 sm:flex"
+      aria-label={isPrev ? "Agente anterior" : "Siguiente agente"}
+      className={`absolute top-1/2 z-20 flex h-11 w-8 -translate-y-1/2 touch-manipulation items-center justify-center border-0 bg-transparent p-0 text-xl text-xamani-silver transition-colors enabled:active:text-xamani-cyan enabled:hover:text-xamani-cyan disabled:opacity-25 sm:relative sm:top-auto sm:z-auto sm:h-10 sm:w-10 sm:min-h-[44px] sm:min-w-[44px] sm:translate-y-0 sm:rounded-full sm:border sm:border-white/15 sm:bg-xamani-navy/40 sm:text-lg sm:backdrop-blur-sm sm:enabled:hover:border-xamani-cyan/40 ${
+        isPrev ? "left-0.5 sm:left-auto" : "right-0.5 sm:right-auto"
+      }`}
     >
-      {direction === "prev" ? "←" : "→"}
+      {isPrev ? "←" : "→"}
     </button>
   );
 }
 
 export default function AgentesCarousel() {
+  const isMobile = useIsMobile();
   const trackRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,31 +58,96 @@ export default function AgentesCarousel() {
     return cardWidth + GAP_PX;
   }, []);
 
+  const getMaxScroll = useCallback(() => {
+    const track = trackRef.current;
+    const viewport = viewportRef.current;
+    if (!track || !viewport) return 0;
+    return Math.max(0, track.scrollWidth - viewport.clientWidth);
+  }, []);
+
+  const getTargetXForIndex = useCallback(
+    (index: number) => {
+      const track = trackRef.current;
+      const viewport = viewportRef.current;
+      if (!track || !viewport) return 0;
+
+      const maxScroll = getMaxScroll();
+      if (maxScroll === 0) return 0;
+
+      const card = track.children[index] as HTMLElement | undefined;
+      if (!card) return 0;
+
+      const centeredOffset =
+        card.offsetLeft - (viewport.clientWidth - card.offsetWidth) / 2;
+
+      return -Math.min(maxScroll, Math.max(0, centeredOffset));
+    },
+    [getMaxScroll]
+  );
+
+  const getNearestIndex = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return 0;
+
+    const currentX = x.get();
+    let nearest = 0;
+    let minDistance = Infinity;
+
+    for (let index = 0; index < AGENTES_DATA.length; index++) {
+      const distance = Math.abs(currentX - getTargetXForIndex(index));
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearest = index;
+      }
+    }
+
+    return nearest;
+  }, [getTargetXForIndex, x]);
+
   const measure = useCallback(() => {
     const track = trackRef.current;
     const viewport = viewportRef.current;
     if (!track || !viewport) return;
 
-    const dragLimit = Math.max(0, track.scrollWidth - viewport.clientWidth);
-    setMaxDrag(dragLimit);
+    if (!isMobile) {
+      setMaxDrag(getMaxScroll());
+      setActiveIndex(getNearestIndex());
+    }
 
     const step = getStep();
-    if (step > 0) {
+    if (step > 0 && isMobile) {
       setActiveIndex(
-        Math.min(AGENTES_DATA.length - 1, Math.round(Math.abs(x.get()) / step))
+        Math.min(
+          AGENTES_DATA.length - 1,
+          Math.max(0, Math.round(viewport.scrollLeft / step))
+        )
       );
     }
-  }, [getStep, x]);
+  }, [getMaxScroll, getNearestIndex, getStep, isMobile]);
 
   useEffect(() => {
     measure();
     const rafId = requestAnimationFrame(measure);
+
+    const track = trackRef.current;
+    const viewport = viewportRef.current;
+    const resizeObserver =
+      track && viewport
+        ? new ResizeObserver(() => {
+            measure();
+          })
+        : null;
+
+    resizeObserver?.observe(track!);
+    resizeObserver?.observe(viewport!);
     window.addEventListener("resize", measure);
+
     return () => {
       cancelAnimationFrame(rafId);
+      resizeObserver?.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [measure]);
+  }, [measure, isMobile]);
 
   const collapseActiveCard = useCallback(() => {
     setActiveCard(null);
@@ -99,49 +170,78 @@ export default function AgentesCarousel() {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [activeCard, collapseActiveCard]);
 
+  const scrollMobileToIndex = useCallback((index: number) => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+
+    const card = track.children[index] as HTMLElement | undefined;
+    if (!card) return;
+
+    const targetLeft =
+      card.offsetLeft - (viewport.clientWidth - card.offsetWidth) / 2;
+
+    viewport.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+    setActiveIndex(index);
+  }, []);
+
   const snapToIndex = useCallback(
     (index: number) => {
-      const step = getStep();
-      if (step <= 0) return;
+      collapseActiveCard();
 
-      const target = -Math.min(maxDrag, Math.max(0, index * step));
+      if (isMobile) {
+        scrollMobileToIndex(index);
+        return;
+      }
+
+      const target = getTargetXForIndex(index);
       animate(x, target, { type: "spring", stiffness: 320, damping: 36 });
       setActiveIndex(index);
-      collapseActiveCard();
     },
-    [collapseActiveCard, getStep, maxDrag, x]
+    [collapseActiveCard, getTargetXForIndex, isMobile, scrollMobileToIndex, x]
   );
 
   const snapToNearest = useCallback(() => {
-    const step = getStep();
-    if (step <= 0) return;
-
-    const index = Math.min(
-      AGENTES_DATA.length - 1,
-      Math.max(0, Math.round(Math.abs(x.get()) / step))
-    );
-    snapToIndex(index);
-  }, [getStep, snapToIndex, x]);
+    snapToIndex(getNearestIndex());
+  }, [getNearestIndex, snapToIndex]);
 
   const handleDragStart = () => {
     collapseActiveCard();
   };
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
-    const step = getStep();
-    if (step <= 0) return;
-
     const velocityBoost = info.velocity.x * 0.15;
-    const projected = Math.abs(x.get() - velocityBoost);
-    const nextIndex = Math.min(
-      AGENTES_DATA.length - 1,
-      Math.max(0, Math.round(projected / step))
-    );
+    const projectedX = x.get() + velocityBoost;
+    x.set(projectedX);
 
-    snapToIndex(nextIndex);
+    const track = trackRef.current;
+    if (!track) return;
+
+    let nearest = 0;
+    let minDistance = Infinity;
+
+    for (let index = 0; index < AGENTES_DATA.length; index++) {
+      const distance = Math.abs(projectedX - getTargetXForIndex(index));
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearest = index;
+      }
+    }
+
+    snapToIndex(nearest);
   };
 
+  const handleMobileScroll = useCallback(() => {
+    collapseActiveCard();
+    measure();
+  }, [collapseActiveCard, measure]);
+
   useEffect(() => {
+    if (isMobile) return;
+
     const viewport = viewportRef.current;
     if (!viewport) return;
 
@@ -183,21 +283,23 @@ export default function AgentesCarousel() {
         clearTimeout(wheelSnapTimerRef.current);
       }
     };
-  }, [collapseActiveCard, getStep, maxDrag, snapToNearest, x]);
+  }, [collapseActiveCard, getNearestIndex, getStep, getTargetXForIndex, isMobile, maxDrag, snapToNearest, x]);
 
   const goPrev = () => snapToIndex(Math.max(0, activeIndex - 1));
   const goNext = () =>
     snapToIndex(Math.min(AGENTES_DATA.length - 1, activeIndex + 1));
 
-  const isCarouselLocked = activeCard !== null;
+  const isCarouselLocked = !isMobile && activeCard !== null;
 
   return (
     <div ref={containerRef} className="relative">
       <p className="mb-4 font-archia text-xs text-xamani-silver-muted sm:text-sm">
-        Desliza o usa el scroll horizontal para conocer a nuestros agentes
+        {isMobile
+          ? "Desliza horizontalmente o usa las flechas para conocer a nuestros agentes"
+          : "Desliza o usa el scroll horizontal para conocer a nuestros agentes"}
       </p>
 
-      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+      <div className="relative -mx-6 sm:mx-0 sm:flex sm:items-center sm:gap-3 md:gap-4">
         <CarouselNavButton
           direction="prev"
           onClick={goPrev}
@@ -206,27 +308,36 @@ export default function AgentesCarousel() {
 
         <div
           ref={viewportRef}
-          style={{ touchAction: isCarouselLocked ? "auto" : "pan-y pinch-zoom" }}
-          className={`min-w-0 flex-1 overflow-hidden overscroll-x-contain ${
-            isCarouselLocked
-              ? ""
-              : "cursor-grab active:cursor-grabbing"
+          onScroll={isMobile ? handleMobileScroll : undefined}
+          style={
+            isMobile
+              ? { WebkitOverflowScrolling: "touch" }
+              : { touchAction: isCarouselLocked ? "auto" : "pan-x pan-y" }
+          }
+          className={`w-full overscroll-x-contain sm:min-w-0 sm:flex-1 ${
+            isMobile
+              ? "scrollbar-none snap-x snap-mandatory overflow-x-auto"
+              : `overflow-hidden ${
+                  isCarouselLocked
+                    ? ""
+                    : "cursor-grab active:cursor-grabbing"
+                }`
           }`}
         >
           <motion.div
             ref={trackRef}
-            drag={isCarouselLocked ? false : "x"}
+            drag={isCarouselLocked ? false : isMobile ? false : "x"}
             dragConstraints={{ left: -maxDrag, right: 0 }}
             dragElastic={0.08}
-            style={{ x, gap: GAP_PX }}
+            style={isMobile ? { gap: GAP_PX } : { x, gap: GAP_PX }}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            className="flex pb-2"
+            className="flex w-max pb-2"
           >
             {AGENTES_DATA.map((agente, index) => (
               <div
                 key={agente.nombre}
-                className={`relative h-[24.5rem] w-[min(86vw,21rem)] shrink-0 sm:h-[26.5rem] sm:w-[23rem] ${
+                className={`relative h-[24.5rem] w-[min(86vw,21rem)] shrink-0 snap-center sm:h-[26.5rem] sm:w-[23rem] ${
                   activeCard === index ? "z-30" : ""
                 }`}
               >
@@ -247,7 +358,7 @@ export default function AgentesCarousel() {
         />
       </div>
 
-      <div className="mt-4 flex justify-center gap-1.5">
+      <div className="mt-4 flex justify-center gap-1.5 sm:mt-4">
         {AGENTES_DATA.map((agente, index) => (
           <button
             key={agente.nombre}

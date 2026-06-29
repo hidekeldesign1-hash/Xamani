@@ -6,6 +6,12 @@ export interface Agente {
   instagram: string;
   whatsapp: string;
   web?: string;
+  foto?: string;
+  fotoAjuste?: string;
+  fotoAjusteCirculo?: string;
+  fotoCirculoClassName?: string;
+  fotoFondo?: string;
+  fotoSinBorde?: boolean;
 }
 
 export const AGENTES_DATA: Agente[] = [
@@ -17,6 +23,9 @@ export const AGENTES_DATA: Agente[] = [
       "Ese es el verdadero significado del seguro: la solidaridad, la prevención y la tranquilidad porque asegurar no solo es proteger un patrimonio; es cuidar el futuro de quienes más importan. 25 años cuidando el futuro de quienes más importan.",
     instagram: "@lucindalaraseguros",
     whatsapp: "5539617361",
+    foto: "/agentes/lucinda-lara-abril.png",
+    fotoAjuste: "object-cover object-[50%_40%]",
+    fotoAjusteCirculo: "object-cover object-[50%_42%] scale-[1.45]",
   },
   {
     nombre: "Diego Cárdenas Quezada",
@@ -35,6 +44,7 @@ export const AGENTES_DATA: Agente[] = [
       "24 años como agente de seguros aprendiendo que cada póliza representa una historia, una familia y un proyecto de vida. En DSO no vendemos seguros, diseñamos estrategias.",
     instagram: "",
     whatsapp: "5522710833",
+    foto: "/agentes/dolores-sanchez.png",
   },
   {
     nombre: "Martha Patricia Medina Flores",
@@ -44,6 +54,7 @@ export const AGENTES_DATA: Agente[] = [
       "38 años protegiendo lo más quieres con integridad, honestidad y trabajo continuo. Miembro de la MDRT y docente universitaria.",
     instagram: "",
     whatsapp: "",
+    foto: "/agentes/patricia-medina.png",
   },
   {
     nombre: "Cristina Montero",
@@ -53,6 +64,7 @@ export const AGENTES_DATA: Agente[] = [
       "Porque las decisiones importantes merecen una conversación humana.",
     instagram: "@o.abeiro",
     whatsapp: "5573966005",
+    foto: "/agentes/cristina-montero.png",
   },
   {
     nombre: "Noe Diego Flores Sánchez",
@@ -62,6 +74,7 @@ export const AGENTES_DATA: Agente[] = [
       "28 años protegiendo lo más valioso que tiene una persona: su vida, su salud y su familia.",
     instagram: "",
     whatsapp: "5518390844",
+    foto: "/agentes/noe-diego-flores.png",
   },
   {
     nombre: "Blanca Mendoza",
@@ -72,6 +85,24 @@ export const AGENTES_DATA: Agente[] = [
     instagram: "",
     whatsapp: "",
     web: "https://www.veycom.com",
+    foto: "/agentes/veycom-logo.png",
+    fotoAjuste: "object-contain bg-white p-2",
+  },
+  {
+    nombre: "Ordena Finanzas",
+    marca: "",
+    lema: "Algunas cosas cambian con el tiempo. Otras se vuelven más importantes.",
+    descripcion:
+      "En Ordena Finanzas ayudamos a personas, familias y empresarios a construir un patrimonio sólido mediante estrategias de ahorro, inversión, retiro y protección, para que cada decisión financiera tenga un propósito y cada meta un plan.",
+    instagram: "",
+    whatsapp: "5513055590",
+    web: "https://ordena-finanzas.com",
+    foto: "/agentes/ordena-finanzas-logo.png",
+    fotoAjuste: "object-cover object-center",
+    fotoAjusteCirculo: "object-cover object-center",
+    fotoCirculoClassName: "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]",
+    fotoFondo: "bg-black",
+    fotoSinBorde: true,
   },
 ];
 
