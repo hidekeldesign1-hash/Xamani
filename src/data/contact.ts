@@ -4,7 +4,7 @@ export const XAMANI_PHONE_DISPLAY = "55 3898 8562";
 
 export const XAMANI_PHONE_TEL = `tel:+${XAMANI_WHATSAPP_PHONE}`;
 
-export const WHATSAPP_JOIN_MESSAGE = "Quiero ser Xamani, dame mas información";
+export const WHATSAPP_JOIN_MESSAGE = "Quiero ser Xamani, dame más información";
 
 export const WHATSAPP_ASESORIA_MESSAGE = "Busco una asesoria";
 

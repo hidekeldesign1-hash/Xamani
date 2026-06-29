@@ -43,12 +43,10 @@ export default function AgentesCarousel() {
   const isMobile = useIsMobile();
   const trackRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const wheelSnapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const x = useMotionValue(0);
   const [maxDrag, setMaxDrag] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeCard, setActiveCard] = useState<number | null>(null);
 
   const getStep = useCallback(() => {
     const track = trackRef.current;
@@ -149,27 +147,6 @@ export default function AgentesCarousel() {
     };
   }, [measure, isMobile]);
 
-  const collapseActiveCard = useCallback(() => {
-    setActiveCard(null);
-  }, []);
-
-  const handleCardActivate = useCallback((index: number) => {
-    setActiveCard((prev) => (prev === index ? null : index));
-  }, []);
-
-  useEffect(() => {
-    if (activeCard === null) return;
-
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as HTMLElement;
-      if (target.closest("[data-agente-card]")) return;
-      collapseActiveCard();
-    };
-
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [activeCard, collapseActiveCard]);
-
   const scrollMobileToIndex = useCallback((index: number) => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
@@ -190,8 +167,6 @@ export default function AgentesCarousel() {
 
   const snapToIndex = useCallback(
     (index: number) => {
-      collapseActiveCard();
-
       if (isMobile) {
         scrollMobileToIndex(index);
         return;
@@ -201,16 +176,12 @@ export default function AgentesCarousel() {
       animate(x, target, { type: "spring", stiffness: 320, damping: 36 });
       setActiveIndex(index);
     },
-    [collapseActiveCard, getTargetXForIndex, isMobile, scrollMobileToIndex, x]
+    [getTargetXForIndex, isMobile, scrollMobileToIndex, x]
   );
 
   const snapToNearest = useCallback(() => {
     snapToIndex(getNearestIndex());
   }, [getNearestIndex, snapToIndex]);
-
-  const handleDragStart = () => {
-    collapseActiveCard();
-  };
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     const velocityBoost = info.velocity.x * 0.15;
@@ -235,9 +206,8 @@ export default function AgentesCarousel() {
   };
 
   const handleMobileScroll = useCallback(() => {
-    collapseActiveCard();
     measure();
-  }, [collapseActiveCard, measure]);
+  }, [measure]);
 
   useEffect(() => {
     if (isMobile) return;
@@ -254,7 +224,6 @@ export default function AgentesCarousel() {
       if (delta === 0) return;
 
       event.preventDefault();
-      collapseActiveCard();
 
       const nextX = Math.min(0, Math.max(-maxDrag, x.get() - delta));
       x.set(nextX);
@@ -283,16 +252,14 @@ export default function AgentesCarousel() {
         clearTimeout(wheelSnapTimerRef.current);
       }
     };
-  }, [collapseActiveCard, getNearestIndex, getStep, getTargetXForIndex, isMobile, maxDrag, snapToNearest, x]);
+  }, [getStep, isMobile, maxDrag, snapToNearest, x]);
 
   const goPrev = () => snapToIndex(Math.max(0, activeIndex - 1));
   const goNext = () =>
     snapToIndex(Math.min(AGENTES_DATA.length - 1, activeIndex + 1));
 
-  const isCarouselLocked = !isMobile && activeCard !== null;
-
   return (
-    <div ref={containerRef} className="relative">
+    <div className="relative">
       <p className="mb-4 font-archia text-xs text-xamani-silver-muted sm:text-sm">
         {isMobile
           ? "Desliza horizontalmente o usa las flechas para conocer a nuestros asesores"
@@ -312,40 +279,29 @@ export default function AgentesCarousel() {
           style={
             isMobile
               ? { WebkitOverflowScrolling: "touch" }
-              : { touchAction: isCarouselLocked ? "auto" : "pan-x pan-y" }
+              : { touchAction: "pan-x pan-y" }
           }
           className={`w-full overscroll-x-contain sm:min-w-0 sm:flex-1 ${
             isMobile
               ? "scrollbar-none snap-x snap-mandatory overflow-x-auto"
-              : `overflow-hidden ${
-                  isCarouselLocked
-                    ? ""
-                    : "cursor-grab active:cursor-grabbing"
-                }`
+              : "cursor-grab overflow-hidden active:cursor-grabbing"
           }`}
         >
           <motion.div
             ref={trackRef}
-            drag={isCarouselLocked ? false : isMobile ? false : "x"}
+            drag={isMobile ? false : "x"}
             dragConstraints={{ left: -maxDrag, right: 0 }}
             dragElastic={0.08}
             style={isMobile ? { gap: GAP_PX } : { x, gap: GAP_PX }}
-            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             className="flex w-max pb-2"
           >
-            {AGENTES_DATA.map((agente, index) => (
+            {AGENTES_DATA.map((agente) => (
               <div
                 key={agente.nombre}
-                className={`relative h-[24.5rem] w-[min(86vw,21rem)] shrink-0 snap-center sm:h-[26.5rem] sm:w-[23rem] ${
-                  activeCard === index ? "z-30" : ""
-                }`}
+                className="relative h-[24.5rem] w-[min(86vw,21rem)] shrink-0 snap-center sm:h-[26.5rem] sm:w-[23rem]"
               >
-                <AgenteCard
-                  agente={agente}
-                  isActive={activeCard === index}
-                  onActivate={() => handleCardActivate(index)}
-                />
+                <AgenteCard agente={agente} />
               </div>
             ))}
           </motion.div>
