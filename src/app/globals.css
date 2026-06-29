@@ -148,7 +148,13 @@
     will-change: transform;
   }
 
-  .roadmap-glyph,
+  .roadmap-glyph {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
   .roadmap-step-card,
   .roadmap-step-node,
   .roadmap-path {
