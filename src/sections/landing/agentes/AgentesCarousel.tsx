@@ -226,7 +226,7 @@ export default function AgentesCarousel() {
             {AGENTES_DATA.map((agente, index) => (
               <div
                 key={agente.nombre}
-                className={`relative h-[26rem] w-[min(88vw,22rem)] shrink-0 sm:h-[28rem] sm:w-[24rem] ${
+                className={`relative h-[24.5rem] w-[min(86vw,21rem)] shrink-0 sm:h-[26.5rem] sm:w-[23rem] ${
                   activeCard === index ? "z-30" : ""
                 }`}
               >

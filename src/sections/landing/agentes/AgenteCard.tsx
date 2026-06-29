@@ -49,8 +49,8 @@ export default function AgenteCard({
       <div
         className={
           isActive
-            ? "relative z-0 flex min-h-0 flex-1 flex-col p-5 sm:p-6"
-            : "relative z-0 flex min-h-0 flex-1 flex-col px-5 pb-5 pt-[5.25rem] sm:px-6 sm:pb-6 sm:pt-[5.5rem]"
+            ? "relative z-0 flex min-h-0 flex-1 flex-col overflow-hidden p-5 sm:p-6"
+            : "relative z-0 flex min-h-0 flex-1 flex-col overflow-hidden px-5 pb-4 pt-[4.75rem] sm:px-6 sm:pb-5 sm:pt-[5rem]"
         }
       >
         <h3 className="font-ambit text-base leading-snug text-xamani-silver sm:text-lg">
@@ -60,12 +60,12 @@ export default function AgenteCard({
           {agente.marca}
         </p>
 
-        <p className="mt-3 line-clamp-3 font-archia text-xs italic leading-relaxed text-xamani-silver/90 sm:text-sm">
+        <p className="mt-2 line-clamp-2 font-archia text-xs italic leading-relaxed text-xamani-silver/90 sm:text-sm">
           {agente.lema}
         </p>
 
-        <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-none">
-          <p className="font-archia text-sm leading-relaxed text-xamani-silver-muted">
+        <div className="mt-2 min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-none">
+          <p className="font-archia text-xs leading-relaxed text-xamani-silver-muted sm:text-sm">
             {agente.descripcion}
           </p>
         </div>
@@ -93,12 +93,12 @@ export default function AgenteCard({
           className={
             isActive
               ? "agente-card-footer-blur relative z-30 shrink-0 px-5 pb-5 sm:px-6 sm:pb-6"
-              : "relative z-10 shrink-0 px-5 pb-5 sm:px-6 sm:pb-6"
+              : "relative z-10 shrink-0 px-5 pb-4 sm:px-6 sm:pb-5"
           }
         >
           <div
             className={`flex flex-wrap items-center justify-center ${
-              isActive ? "gap-3 px-2 pt-4 sm:gap-4" : "gap-2 border-t border-white/10 pt-4"
+              isActive ? "gap-3 px-2 pt-4 sm:gap-4" : "gap-2 border-t border-white/10 pt-3"
             }`}
           >
             {whatsappUrl && (
