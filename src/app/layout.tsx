@@ -43,6 +43,18 @@ export const metadata: Metadata = {
   title: "XAMANI — Asesores con Propósito",
   description:
     "Elegimos construir lo que trasciende. Asesoría estratégica con propósito.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon/icon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/icon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/icon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon/icon-192x192.png", sizes: "192x192", type: "image/png" }],
+    shortcut: "/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {
