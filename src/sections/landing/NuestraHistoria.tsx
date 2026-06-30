@@ -96,6 +96,7 @@ export default function NuestraHistoria() {
               <HistoriaImageFrame
                 alt="Amado Ugarte Loyola — retrato histórico"
                 caption="Amado Ugarte Loyola"
+                src="/historia/amado-ugarte.png"
               />
             </Reveal>
 

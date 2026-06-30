@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import AgendaAsesoria from "@/sections/landing/AgendaAsesoria";
 
 export const metadata: Metadata = {
-  title: "Asesoría Xamani — XAMANI",
-  description: "Agenda una sesión de diagnóstico con los asesores de XAMANI.",
+  title: "Conviértete en Xamani — XAMANI",
+  description: "Únete a los asesores con propósito de XAMANI.",
 };
 
 export default function UnirmeEquipoPage() {
