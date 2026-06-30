@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import SiteJsonLd from "@/components/seo/SiteJsonLd";
+import { createSiteMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const ambit = localFont({
@@ -39,10 +41,7 @@ const archia = localFont({
   fallback: ["system-ui", "sans-serif"],
 });
 
-export const metadata: Metadata = {
-  title: "XAMANI — Asesores con Propósito",
-  description:
-    "Elegimos construir lo que trasciende. Asesoría estratégica con propósito.",
+export const metadata: Metadata = createSiteMetadata({
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -55,7 +54,7 @@ export const metadata: Metadata = {
     apple: [{ url: "/favicon/icon-192x192.png", sizes: "192x192", type: "image/png" }],
     shortcut: "/favicon.ico",
   },
-};
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -72,6 +71,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${ambit.variable} ${archia.variable}`}>
       <body className="min-h-screen overflow-x-hidden bg-xamani-canvas font-archia text-xamani-silver">
+        <SiteJsonLd />
         {children}
       </body>
     </html>

@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/data/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "XAMANI — Asesores con Propósito",
-    short_name: "XAMANI",
-    description:
-      "Elegimos construir lo que trasciende. Asesoría estratégica con propósito.",
+    name: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    short_name: SITE_NAME,
+    description: SITE_DESCRIPTION,
     start_url: "/",
     display: "standalone",
     background_color: "#0b1520",
