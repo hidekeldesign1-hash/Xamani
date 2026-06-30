@@ -92,8 +92,8 @@ export const AGENTES_DATA: Agente[] = [
     fotoAjuste: "object-contain bg-white p-2",
   },
   {
-    nombre: "Ordena Finanzas",
-    marca: "",
+    nombre: "David Mérida",
+    marca: "Ordena Finanzas",
     lema: "Algunas cosas cambian con el tiempo. Otras se vuelven más importantes.",
     descripcion:
       "En Ordena Finanzas ayudamos a personas, familias y empresarios a construir un patrimonio sólido mediante estrategias de ahorro, inversión, retiro y protección, para que cada decisión financiera tenga un propósito y cada meta un plan.",
