@@ -16,8 +16,8 @@ export default function LandingEstructural() {
       <div className="relative z-[1]">
         <Manifiesto />
         <ModeloNegocio />
-        <UnirmeEquipo />
         <AgendaAsesoria />
+        <UnirmeEquipo />
         <NuestraHistoria />
       </div>
     </div>

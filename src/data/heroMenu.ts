@@ -53,7 +53,7 @@ export const HERO_MENU_ITEMS: HeroMenuItem[] = [
   },
   {
     id: "asesoria",
-    label: "Atrévete",
+    label: "Asesoría Xamani",
     subtitle: "Hablemos de tu visión.",
     href: ROUTES.asesoria,
     icon: "calendar",
