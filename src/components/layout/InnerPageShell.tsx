@@ -18,25 +18,19 @@ export default function InnerPageShell({ children }: InnerPageShellProps) {
   const isImmersive = isManifiesto || isEnergiaXamani;
 
   return (
-    <main
-      className={`relative min-h-screen bg-xamani-canvas ${
-        isEnergiaXamani ? "overflow-x-hidden" : "overflow-x-clip"
-      }`}
-    >
+    <main className="relative min-h-screen overflow-x-clip bg-xamani-canvas">
       <FloatingNavbar alwaysVisible />
       <div className="relative min-h-screen">
         <LogoPatternLayer className={isEnergiaXamani ? "hidden" : "max-md:hidden"} />
         <div
           className={`relative z-[1] ${
-            isEnergiaXamani
-              ? "pb-0"
-              : "pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0"
+            isEnergiaXamani ? "pb-0" : "pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0"
           }`}
         >
           <div
-            className={`bg-xamani-canvas ${
-              isEnergiaXamani ? "overflow-visible" : "overflow-x-clip"
-            } ${isImmersive ? "rounded-none" : "rounded-t-[4rem] sm:rounded-t-[6rem]"}`}
+            className={`overflow-x-clip bg-xamani-canvas ${
+              isImmersive ? "rounded-none" : "rounded-t-[4rem] sm:rounded-t-[6rem]"
+            }`}
           >
             <div className={isEnergiaXamani ? "pt-0" : "pt-20 md:pt-24"}>{children}</div>
           </div>

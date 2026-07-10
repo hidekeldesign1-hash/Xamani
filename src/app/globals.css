@@ -99,6 +99,18 @@
     }
   }
 
+  /* Fallback 100vh primero: sin esto, navegadores sin svh ignoran min-height y el layout se pega arriba. */
+  .energia-min-h {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  @supports (height: 100dvh) {
+    .energia-min-h {
+      min-height: 100dvh;
+    }
+  }
+
   .roadmap-sticky-viewport {
     height: calc(100svh - 6.25rem - env(safe-area-inset-bottom));
   }

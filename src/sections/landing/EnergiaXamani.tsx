@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Isotipo from "@/components/brand/Isotipo";
 import HeroNeonCanvas from "@/components/hero/HeroNeonCanvas";
 import EnergiaProcessFlow from "@/sections/landing/energia/EnergiaProcessFlow";
@@ -129,15 +129,15 @@ export default function EnergiaXamani() {
     ? { duration: 0 }
     : { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const };
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [step, showingResultado]);
+  const allowVerticalScroll = step !== "intro" || showingResultado || isMobile;
 
   return (
     <section
       id="agenda-asesoria"
       aria-label="Descubre tu energía XAMANI"
-      className="relative min-h-[100svh] overflow-x-hidden overflow-y-auto overscroll-x-none overscroll-y-contain bg-[#0b1520]"
+      className={`energia-min-h relative overflow-x-hidden overscroll-x-none bg-[#0b1520] ${
+        allowVerticalScroll ? "overflow-y-auto overscroll-y-contain" : "overflow-hidden"
+      }`}
     >
       <div className="pointer-events-none absolute inset-0 z-0">
         <HeroNeonCanvas
@@ -156,10 +156,8 @@ export default function EnergiaXamani() {
       </div>
 
       <div
-        className={`relative z-10 flex min-h-[100svh] w-full px-5 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-[calc(var(--nav-offset)+1.25rem)] sm:px-8 sm:pt-[calc(var(--nav-offset)+1.5rem)] md:px-12 lg:px-16 ${
-          showingResultado
-            ? "items-start justify-center"
-            : "items-safe-center justify-center"
+        className={`energia-min-h relative z-10 flex w-full justify-center px-5 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-[calc(var(--nav-offset)+1.25rem)] sm:px-8 sm:pt-[calc(var(--nav-offset)+1.5rem)] md:px-12 lg:px-16 ${
+          showingResultado ? "items-start" : "items-center"
         }`}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -170,10 +168,10 @@ export default function EnergiaXamani() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -16 }}
               transition={transition}
-              className="mx-auto flex w-full max-w-5xl flex-col items-center py-2 sm:py-4"
+              className="mx-auto my-auto flex w-full max-w-5xl flex-col items-center"
             >
               <div className="relative mx-auto w-full max-w-[22rem] sm:max-w-[26rem] md:max-w-[30rem] lg:max-w-[34rem]">
-                <div className="relative mx-auto aspect-square w-[min(100%,48svh,22rem)] sm:w-[min(100%,50svh,26rem)] md:w-[min(100%,52svh,30rem)] lg:w-[min(100%,54svh,34rem)]">
+                <div className="relative mx-auto aspect-square w-full max-w-[min(100%,52vh)] sm:max-w-none">
                   <EnergiaRing />
 
                   <div className="absolute inset-0 max-md:flex max-md:flex-col max-md:items-center max-md:justify-center max-md:px-5 max-md:pb-3 max-md:pt-5 max-md:text-center md:grid md:place-items-center md:px-10 md:text-center">
@@ -245,7 +243,7 @@ export default function EnergiaXamani() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
               transition={transition}
-              className="w-full"
+              className={`w-full max-w-6xl ${showingResultado ? "" : "my-auto"}`}
             >
               <EnergiaProcessFlow
                 onBackToIntro={() => {
