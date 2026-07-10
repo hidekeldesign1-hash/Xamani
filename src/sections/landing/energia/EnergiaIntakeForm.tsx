@@ -95,8 +95,7 @@ export default function EnergiaIntakeForm({ onContinue }: EnergiaIntakeFormProps
         <FormDivider />
 
         <p className="mx-auto max-w-md font-archia text-sm leading-relaxed text-xamani-silver/80 sm:text-[0.95rem] md:max-w-2xl">
-          Queremos conocerte antes de revelar tu experiencia XAMANI. Tus datos se guardarán
-          incluso si decides pausar el proceso.
+          Queremos conocerte antes de revelar tu experiencia XAMANI.
         </p>
       </div>
 
