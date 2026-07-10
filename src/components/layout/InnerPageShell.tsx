@@ -14,21 +14,21 @@ export default function InnerPageShell({ children }: InnerPageShellProps) {
   const pathname = usePathname();
   const hideFooter = pathname === ROUTES.manifiesto;
   const isManifiesto = pathname === ROUTES.manifiesto;
+  const isEnergiaXamani = pathname === ROUTES.equipo;
+  const isImmersive = isManifiesto || isEnergiaXamani;
 
   return (
     <main className="relative min-h-screen overflow-x-clip bg-xamani-canvas">
       <FloatingNavbar alwaysVisible />
       <div className="relative min-h-screen">
-        <LogoPatternLayer className="max-md:hidden" />
+        <LogoPatternLayer className={isEnergiaXamani ? "hidden" : "max-md:hidden"} />
         <div className="relative z-[1] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0">
           <div
             className={`overflow-x-clip bg-xamani-canvas ${
-              isManifiesto
-                ? "max-md:rounded-none"
-                : "rounded-t-[4rem] sm:rounded-t-[6rem]"
+              isImmersive ? "rounded-none" : "rounded-t-[4rem] sm:rounded-t-[6rem]"
             }`}
           >
-            <div className="pt-20 md:pt-24">{children}</div>
+            <div className={isEnergiaXamani ? "pt-0" : "pt-20 md:pt-24"}>{children}</div>
           </div>
           {!hideFooter && <SiteFooter />}
         </div>

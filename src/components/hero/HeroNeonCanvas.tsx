@@ -336,8 +336,10 @@ export default function HeroNeonCanvas({
       lastFrameRef.current = 0;
       lastPaintAt = 0;
 
+      // Siempre pinta un frame estático (evita canvas en blanco al pausar en móvil).
+      paintFrame(false);
+
       if (prefersReducedMotion) {
-        paintFrame(false);
         return;
       }
 
