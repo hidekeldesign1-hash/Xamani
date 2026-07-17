@@ -37,6 +37,7 @@ export default function EnergiaIntakeForm({ onContinue }: EnergiaIntakeFormProps
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<EnergiaIntakeErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const whatsappInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,9 +60,10 @@ export default function EnergiaIntakeForm({ onContinue }: EnergiaIntakeFormProps
     });
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
+    setSubmitError(null);
 
     const nextErrors = validateEnergiaIntake({
       nombre,
@@ -75,10 +77,32 @@ export default function EnergiaIntakeForm({ onContinue }: EnergiaIntakeFormProps
       return;
     }
 
-    saveEnergiaIntake({ nombre, whatsapp, email });
-    setErrors({});
-    setSubmitting(false);
-    onContinue?.();
+    try {
+      const payload = saveEnergiaIntake({ nombre, whatsapp, email });
+
+      const response = await fetch("/api/energia-intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: payload.nombre,
+          telefono: payload.whatsapp,
+          correo: payload.email,
+        }),
+      });
+
+      if (!response.ok) {
+        setSubmitError("No pudimos guardar tus datos. Intenta de nuevo en un momento.");
+        setSubmitting(false);
+        return;
+      }
+
+      setErrors({});
+      onContinue?.();
+    } catch {
+      setSubmitError("No pudimos guardar tus datos. Revisa tu conexión e intenta de nuevo.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -196,16 +220,23 @@ export default function EnergiaIntakeForm({ onContinue }: EnergiaIntakeFormProps
         </div>
 
         <div className="pt-6 md:pt-5">
+          {submitError ? (
+            <p className="mb-3 text-center font-archia text-xs text-xamani-wine" role="alert">
+              {submitError}
+            </p>
+          ) : null}
           <div className="rounded-pill bg-gradient-to-r from-xamani-cyan/80 via-xamani-silver/30 to-xamani-wine p-px">
             <button
               type="submit"
               disabled={submitting}
               className="inline-flex min-h-[48px] w-full touch-manipulation items-center justify-center gap-3 rounded-pill bg-[#0b1520]/95 px-8 py-3.5 font-ambit text-[0.68rem] uppercase tracking-[0.28em] text-xamani-silver transition-all duration-300 ease-out-expo hover:bg-[#0f1d2c]/95 active:scale-[0.98] disabled:opacity-60 sm:text-xs sm:tracking-[0.32em]"
             >
-              Continuar
-              <span aria-hidden="true" className="text-base leading-none">
-                →
-              </span>
+              {submitting ? "Guardando" : "Continuar"}
+              {!submitting ? (
+                <span aria-hidden="true" className="text-base leading-none">
+                  →
+                </span>
+              ) : null}
             </button>
           </div>
         </div>
