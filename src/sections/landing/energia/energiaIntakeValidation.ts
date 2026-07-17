@@ -249,13 +249,20 @@ export function validateEnergiaIntake(data: EnergiaIntakeData): EnergiaIntakeErr
 
 export const ENERGIA_INTAKE_STORAGE_KEY = "xamani-energia-intake";
 
+export type EnergiaIntakeStored = {
+  nombre: string;
+  whatsapp: string;
+  email: string;
+  savedAt: string;
+};
+
 export function saveEnergiaIntake(data: EnergiaIntakeData) {
   const parsed = parseWhatsAppNumber(data.whatsapp.trim());
   if (!parsed) {
     throw new Error("WhatsApp inválido al guardar.");
   }
 
-  const payload = {
+  const payload: EnergiaIntakeStored = {
     nombre: data.nombre.trim(),
     whatsapp: parsed.e164,
     email: data.email.trim(),
@@ -264,4 +271,14 @@ export function saveEnergiaIntake(data: EnergiaIntakeData) {
 
   sessionStorage.setItem(ENERGIA_INTAKE_STORAGE_KEY, JSON.stringify(payload));
   return payload;
+}
+
+export function loadEnergiaIntake(): EnergiaIntakeStored | null {
+  try {
+    const raw = sessionStorage.getItem(ENERGIA_INTAKE_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as EnergiaIntakeStored;
+  } catch {
+    return null;
+  }
 }

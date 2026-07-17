@@ -2,17 +2,16 @@ import { NextResponse } from "next/server";
 
 const SHEETS_WEBAPP_URL = process.env.GOOGLE_SHEETS_ENERGIA_WEBAPP_URL;
 
-type IntakeBody = {
+type SheetsPayload = {
+  action: "intake" | "resultado";
   nombre?: string;
   telefono?: string;
   correo?: string;
+  dominante?: string;
+  complementaria?: string;
 };
 
-async function postToGoogleSheets(payload: {
-  nombre: string;
-  telefono: string;
-  correo: string;
-}) {
+async function postToGoogleSheets(payload: SheetsPayload) {
   if (!SHEETS_WEBAPP_URL) {
     throw new Error("Falta configurar GOOGLE_SHEETS_ENERGIA_WEBAPP_URL.");
   }
@@ -57,7 +56,6 @@ async function postToGoogleSheets(payload: {
       return parsed;
     } catch (error) {
       if (error instanceof SyntaxError) {
-        // POST ya se procesó; respuesta no JSON pero sin HTML de error.
         return { ok: true };
       }
       throw error;
@@ -102,26 +100,47 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: IntakeBody;
+  let body: Record<string, unknown>;
   try {
-    body = (await request.json()) as IntakeBody;
+    body = (await request.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ ok: false, error: "JSON inválido." }, { status: 400 });
   }
 
+  const action = body.action === "resultado" ? "resultado" : "intake";
   const nombre = typeof body.nombre === "string" ? body.nombre.trim() : "";
   const telefono = typeof body.telefono === "string" ? body.telefono.trim() : "";
   const correo = typeof body.correo === "string" ? body.correo.trim() : "";
+  const dominante = typeof body.dominante === "string" ? body.dominante.trim() : "";
+  const complementaria =
+    typeof body.complementaria === "string" ? body.complementaria.trim() : "";
 
-  if (!nombre || !telefono || !correo) {
+  if (action === "intake") {
+    if (!nombre || !telefono || !correo) {
+      return NextResponse.json(
+        { ok: false, error: "Nombre, teléfono y correo son obligatorios." },
+        { status: 400 }
+      );
+    }
+  } else if ((!correo && !telefono) || !dominante || !complementaria) {
     return NextResponse.json(
-      { ok: false, error: "Nombre, teléfono y correo son obligatorios." },
+      {
+        ok: false,
+        error: "Correo o teléfono, dominante y complementaria son obligatorios.",
+      },
       { status: 400 }
     );
   }
 
   try {
-    await postToGoogleSheets({ nombre, telefono, correo });
+    await postToGoogleSheets({
+      action,
+      nombre,
+      telefono,
+      correo,
+      dominante,
+      complementaria,
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     const message =

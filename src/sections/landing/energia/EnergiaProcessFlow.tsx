@@ -6,7 +6,8 @@ import EnergiaIntakeForm from "./EnergiaIntakeForm";
 import EnergiaProcessCard, { ENERGIA_PROCESS_CARD_WIDTH } from "./EnergiaProcessCard";
 import EnergiaQuiz from "./EnergiaQuiz";
 import EnergiaResultado from "./EnergiaResultado";
-import { loadEnergiaResult, type EnergiaResult } from "./energiaTypes";
+import { loadEnergiaIntake } from "./energiaIntakeValidation";
+import { ENERGIA_TYPES, loadEnergiaResult, type EnergiaResult } from "./energiaTypes";
 
 type ProcessPhase = "intake" | "quiz" | "resultado";
 
@@ -80,6 +81,28 @@ export default function EnergiaProcessFlow({
   const openResultado = () => {
     const stored = loadEnergiaResult();
     if (!stored) return;
+
+    const intake = loadEnergiaIntake();
+    if (intake) {
+      const dominant = ENERGIA_TYPES[stored.dominant];
+      const complementary = ENERGIA_TYPES[stored.complementary];
+
+      void fetch("/api/energia-intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "resultado",
+          nombre: intake.nombre,
+          telefono: intake.whatsapp,
+          correo: intake.email,
+          dominante: dominant.name,
+          complementaria: complementary.name,
+        }),
+      }).catch(() => {
+        // No bloqueamos la revelación visual si Sheets falla.
+      });
+    }
+
     setResult(stored);
     setResumeComplete(true);
     goToPhase("resultado");

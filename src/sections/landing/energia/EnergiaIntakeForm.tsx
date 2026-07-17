@@ -84,6 +84,7 @@ export default function EnergiaIntakeForm({ onContinue }: EnergiaIntakeFormProps
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "intake",
           nombre: payload.nombre,
           telefono: payload.whatsapp,
           correo: payload.email,
